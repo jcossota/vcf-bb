@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<!-- VCF Adoption - Building Blocks Tracker | Version 0.4.1 | Scorecard Edition -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCF Adoption - Building Blocks Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,500;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS (identical to Field Guide) ── */
+:root{
+  --ac:#1B1D36; --ac-bg:#E8E8EE; --ac-r:#1B1D36;
+  --white:#FFFFFF; --off:#F0F6FA; --rule:#D0DDE8;
+  --text:#1A2733; --body:#2F4050; --muted:#4A6070; --faint:#8DA0AE;
+  --blue:#115A8C; --blue-lt:#E8F1F8;
+  --px:56px;
+  /* rating colours */
+  --sa-bg:#E8F4EC; --sa-bd:#2E7D50; --sa-tx:#1B5E38;
+  --ma-bg:#EAF2FB; --ma-bd:#1E6FAB; --ma-tx:#1A4E7A;
+  --md-bg:#FEF3E2; --md-bd:#C17F00; --md-tx:#7A4500;
+  --sd-bg:#FDECEA; --sd-bd:#C0392B; --sd-tx:#7A1A1A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--off);color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+/* ── HEADER ── */
+header{
+  background:#1B1D36;
+  padding:18px var(--px);
+  display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+}
+.hd-title{font-size:clamp(16px,2vw,22px);font-weight:700;color:#fff;letter-spacing:.01em;line-height:1.15;}
+.hd-ver{font-size:11px;color:rgba(255,255,255,.65);margin-top:4px;letter-spacing:.04em;line-height:1.2;}
+.hd-pub{font-size:11px;color:rgba(255,255,255,.65);margin-top:4px;letter-spacing:.04em;line-height:1.2;}
+
+/* Right column: counters stacked above session controls */
+.hd-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
+.hd-stats{display:flex;align-items:center;gap:24px;}
+.hd-stat{text-align:right;}
+.hd-stat-val{font-size:22px;font-weight:700;color:#fff;line-height:1;}
+.hd-stat-lbl{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+
+/* Session controls in header */
+.hd-session{
+  display:flex;align-items:center;gap:6px;
+}
+.hd-sess-name{
+  font-size:11px;font-weight:600;
+  color:rgba(255,255,255,.45);
+  white-space:nowrap;max-width:160px;
+  overflow:hidden;text-overflow:ellipsis;flex-shrink:1;
+}
+.hd-sess-name.loaded{color:rgba(255,255,255,.9);}
+.hd-sess-sep{width:1px;height:12px;background:rgba(255,255,255,.18);flex-shrink:0;}
+.hd-sess-btn{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.75);
+  font-family:'Nunito Sans',sans-serif;
+  font-size:11px;font-weight:600;
+  padding:4px 9px;cursor:pointer;
+  border-radius:2px;white-space:nowrap;flex-shrink:0;
+  transition:all .15s;line-height:1;
+}
+.hd-sess-btn:hover{background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.35);}
+.hd-sess-danger{color:rgba(255,100,80,.85);border-color:rgba(255,100,80,.25);}
+.hd-sess-danger:hover{background:rgba(255,80,60,.15);color:#ff6e5e;border-color:rgba(255,100,80,.5);}
+.hd-sess-report{background:var(--blue);border-color:var(--blue);color:#fff;}
+.hd-sess-report:hover{background:#0d4a76;border-color:#0d4a76;}
+
+/* ── NAV BAR (identical to Field Guide) ── */
+.nav-bar{
+  background:#fff; border-bottom:3px solid var(--blue);
+  padding:0 var(--px);
+  display:flex; align-items:stretch;
+  position:sticky; top:0; z-index:200;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
+  overflow-x:auto; scrollbar-width:none;
+}
+.nav-bar::-webkit-scrollbar{display:none;}
+.nav-lbl{
+  font-size:9px;font-weight:500;letter-spacing:.1em;color:#21343D;opacity:.45;
+  display:flex;align-items:center;
+  padding-right:16px; border-right:1px solid rgba(33,52,61,.15); margin-right:4px;
+  white-space:nowrap; flex-shrink:0;
+}
+.fbtn{
+  background:transparent; border:none; border-bottom:3px solid transparent;
+  color:#21343D; font-family:'Nunito Sans',sans-serif;
+  font-size:12px; font-weight:600;
+  padding:13px 14px 10px;
+  cursor:pointer; transition:color .15s,border-color .15s;
+  white-space:nowrap; flex-shrink:0;
+}
+.fbtn:hover{color:var(--blue);}
+.fbtn.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700;}
+.nav-sp{flex:1;}
+.nav-actions{display:flex;align-items:center;gap:8px;padding:0 0 0 16px;border-left:1px solid rgba(33,52,61,.15);flex-shrink:0;}
+.btn-export{
+  background:var(--blue); color:#fff; border:none;
+  font-family:'Nunito Sans',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:.06em;
+  padding:7px 18px; cursor:pointer; border-radius:2px;
+  white-space:nowrap; transition:background .15s; margin:auto 0;
+}
+.btn-export:hover{background:#0d4a76;}
+
+/* View dropdown in nav */
+.nav-dropdown-wrap{display:flex;align-items:stretch;padding-right:4px;border-right:1px solid rgba(33,52,61,.15);margin-right:4px;flex-shrink:0;}
+.nav-dropdown{
+  background:transparent; border:none; border-bottom:3px solid transparent;
+  color:#21343D; font-family:'Nunito Sans',sans-serif;
+  font-size:12px; font-weight:600;
+  padding:13px 22px 10px 8px;
+  cursor:pointer; transition:color .15s,border-color .15s;
+  white-space:nowrap; appearance:none; outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2321343D' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 6px center;
+}
+.nav-dropdown:focus,.nav-dropdown:hover{color:var(--blue);}
+
+/* Project details bar */
+.project-bar{
+  background:#F7F9FA; border-bottom:1px solid var(--rule);
+  padding:0 var(--px);
+  display:flex; align-items:stretch; gap:0;
+  overflow:hidden;
+}
+.project-field{
+  display:flex;align-items:center;
+  padding:10px 16px;border-right:1px solid var(--rule);
+  flex:1; min-width:0;
+}
+.pf-input{
+  flex:1;min-width:0;
+  background:transparent;border:none;border-bottom:1px solid transparent;
+  font-family:'Nunito Sans',sans-serif;
+  font-size:12px;font-weight:600;color:var(--text);
+  outline:none;padding:2px 0;transition:border-color .15s;
+}
+.pf-input::placeholder{color:var(--muted);font-weight:600;font-size:12px;}
+.pf-input:focus{border-bottom-color:var(--blue);}
+
+
+/* ── CATEGORY GROUP HEADER (identical to Field Guide .group-head) ── */
+.group-head{
+  background:var(--blue); padding:11px var(--px);
+  display:flex; align-items:center; gap:12px;
+  border-left:4px solid rgba(255,255,255,.3);
+}
+.group-head.hidden{display:none;}
+.gh-num{
+  font-size:9px;font-weight:600;letter-spacing:.14em;
+  color:rgba(255,255,255,.7); background:rgba(255,255,255,.14);
+  padding:3px 9px; border-radius:1px; flex-shrink:0;
+}
+.gh-name{font-size:13px;font-weight:700;color:#fff;letter-spacing:.02em;}
+.gh-meta{margin-left:auto;font-size:10px;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:16px;}
+.gh-sel{font-weight:700;color:#fff;}
+
+/* ── DEPENDENCY WARNING ── */
+.block-section.dep-warn .block-hd{
+  background:#fef2f2;
+  border-left:4px solid #c0392b;
+}
+.block-section.selected.dep-warn .block-hd{
+  background:#fde8e8;
+  border-left-color:#c0392b;
+}
+.dep-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.03em;
+  color:#9b1c1c;background:#fee2e2;border:1px solid #f5a0a0;
+  padding:2px 8px;border-radius:2px;white-space:nowrap;flex-shrink:0;
+}
+.dep-badge-icon{font-size:11px;line-height:1;}
+.block-section{background:var(--white);border-top:1px solid var(--rule);}
+.block-section.hidden{display:none;}
+
+/* Block header row (mirrors .prod-hd) */
+.block-hd{
+  display:flex; flex-direction:row; align-items:center; gap:16px;
+  padding:16px var(--px);
+  border-bottom:1px solid var(--rule);
+  cursor:pointer; user-select:none;
+  border-left:4px solid transparent;
+  background:#fdfdfd; transition:background .15s;
+}
+.block-hd:hover{background:#f5f8fb;}
+.block-section.selected .block-hd{border-left-color:var(--blue);}
+.block-section.open .block-hd{border-bottom-color:var(--rule);}
+
+.bh-left{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+
+/* checkbox */
+.bh-check{
+  width:20px; height:20px; border-radius:3px;
+  border:2px solid var(--rule);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; cursor:pointer; transition:all .15s;
+  background:#fff; font-size:12px; font-weight:900; color:transparent;
+}
+.bh-check:hover{border-color:var(--blue);}
+.block-section.selected .bh-check{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+.bh-text{flex:1;min-width:0;}
+.bh-cat{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--muted);margin-bottom:1px;}
+.bh-name{font-size:17px;font-weight:700;color:var(--ac);letter-spacing:-.015em;line-height:1.2;}
+
+.bh-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.rating-pill{
+  font-size:10px;font-weight:700;letter-spacing:.04em;
+  padding:3px 10px;border-radius:2px;border:1px solid;
+  white-space:nowrap;
+}
+.rp-sa{background:var(--sa-bg);border-color:var(--sa-bd);color:var(--sa-tx);}
+.rp-ma{background:var(--ma-bg);border-color:var(--ma-bd);color:var(--ma-tx);}
+.rp-md{background:var(--md-bg);border-color:var(--md-bd);color:var(--md-tx);}
+.rp-sd{background:var(--sd-bg);border-color:var(--sd-bd);color:var(--sd-tx);}
+.rp-none{background:var(--ac-bg);border-color:#A8A8C0;color:var(--muted);}
+
+.toggle-chev{font-size:13px;color:var(--faint);transition:transform .22s;flex-shrink:0;}
+.block-section.open .toggle-chev{transform:rotate(180deg);}
+
+/* Rating select in the block header */
+.bh-rating-select{
+  font-family:'Nunito Sans',sans-serif;
+  font-size:11px; font-weight:600;
+  border:1px solid var(--rule); border-radius:2px;
+  padding:5px 26px 5px 9px; line-height:1.4; outline:none;
+  cursor:pointer; transition:border-color .15s,background .15s;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%234A6070' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 7px center;
+  background-color:#fff; color:var(--muted);
+  white-space:nowrap; flex-shrink:0;
+}
+.bh-rating-select:hover,.bh-rating-select:focus{border-color:var(--blue);}
+.bh-rating-select.rp-sa{background-color:var(--sa-bg);border-color:var(--sa-bd);color:var(--sa-tx);}
+.bh-rating-select.rp-ma{background-color:var(--ma-bg);border-color:var(--ma-bd);color:var(--ma-tx);}
+.bh-rating-select.rp-md{background-color:var(--md-bg);border-color:var(--md-bd);color:var(--md-tx);}
+.bh-rating-select.rp-sd{background-color:var(--sd-bg);border-color:var(--sd-bd);color:var(--sd-tx);}
+
+/* Block body (mirrors .prod-body / .prod-content) */
+.block-body{display:none;}
+.block-section.open .block-body{display:block;}
+
+/* rating dropdown (used in header) */
+.field-select{
+  width:100%; font-family:'Nunito Sans',sans-serif;
+  font-size:12px; color:var(--text);
+  background:#fff; border:1px solid var(--rule); border-radius:2px;
+  padding:7px 28px 7px 9px; line-height:1.4; outline:none;
+  cursor:pointer; transition:border-color .15s;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 11 11'%3E%3Cpath fill='%234A6070' d='M5.5 7.5L1 3h9z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 9px center;
+}
+.field-select:focus{border-color:var(--blue);}
+.field-select.rp-sa{background-color:var(--sa-bg);border-color:var(--sa-bd);color:var(--sa-tx);}
+.field-select.rp-ma{background-color:var(--ma-bg);border-color:var(--ma-bd);color:var(--ma-tx);}
+.field-select.rp-md{background-color:var(--md-bg);border-color:var(--md-bd);color:var(--md-tx);}
+.field-select.rp-sd{background-color:var(--sd-bg);border-color:var(--sd-bd);color:var(--sd-tx);}
+
+/* text areas */
+.field-textarea{
+  width:100%; font-family:'Nunito Sans',sans-serif;
+  font-size:12px; font-weight:400; color:var(--body);
+  background:#fff; border:1px solid var(--rule); border-radius:2px;
+  padding:7px 9px; line-height:1.55; outline:none;
+  resize:vertical; min-height:72px;
+  transition:border-color .15s;
+}
+.field-textarea:focus{border-color:var(--blue);}
+.field-textarea::placeholder{color:var(--faint);font-weight:300;}
+
+/* ── BLOCK BODY SCROLL WRAPPER — prevents reflow on resize ── */
+.block-body-inner{
+  overflow-x:auto;
+  min-width:0;
+}
+/* Fixed min-width ensures columns never collapse */
+.block-grid-fixed{
+  min-width:1080px;
+}
+
+/* ── TOP ROW — 5 equal read-only columns ── */
+.block-info{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  border-bottom:1px solid var(--rule);
+}
+.bi{padding:16px 18px 18px;border-right:1px solid var(--rule);}
+.bi:last-child{border-right:none;}
+.bi-lbl{
+  font-size:11px;font-weight:700;letter-spacing:.01em;color:var(--muted);
+  margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--rule);
+  display:flex;align-items:center;gap:6px;
+}
+.bi-lbl .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--ac-r);}
+.bi-val{font-size:12px;font-weight:300;color:var(--body);line-height:1.6;}
+.bi-bullet{display:flex;align-items:flex-start;gap:6px;margin-bottom:3px;}
+.bi-bullet:last-child{margin-bottom:0;}
+.bi-bul{color:var(--blue);font-size:12px;line-height:1.6;flex-shrink:0;}
+.bi-empty{color:var(--faint);}
+
+/* ── BOTTOM ROW — 5 columns matching top row exactly ── */
+/* Col1=Completion Date, Col2=Days Weight, Col3-4=Deliverables (span 2), Col5=Ref Docs */
+.block-fields{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+}
+.bf{padding:16px 18px 18px;border-right:1px solid var(--rule);}
+.bf:last-child{border-right:none;}
+.bf-span2{grid-column:span 2;}
+.bf-lbl{
+  font-size:11px;font-weight:700;letter-spacing:.01em;color:var(--muted);
+  margin-bottom:8px;padding-bottom:7px;border-bottom:2px solid var(--rule);
+  display:flex;align-items:center;gap:6px;
+}
+.bf-lbl .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--blue);}
+.bf-lbl-green .dot{background:#2E7D50;}
+
+/* ref docs cell — same padding as .bf, no separate class needed */
+.ref-link{
+  display:block; font-size:12px; font-weight:600; color:var(--blue);
+  text-decoration:none; margin-bottom:6px; line-height:1.4;
+  padding:2px 0;
+}
+.ref-link:hover{text-decoration:underline;color:#0d4a76;}
+.ref-link::before{content:'↗  ';font-size:10px;opacity:.6;}
+
+/* ── FOOTER ── */
+footer{
+  background:#1B1D36; border-top:3px solid var(--blue);
+  padding:18px var(--px);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.ft-title{font-size:12px;font-weight:600;color:#fff;}
+.ft-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+.btn-print{
+  background:transparent; border:1px solid rgba(255,255,255,.25);
+  color:rgba(255,255,255,.6);
+  font-family:'Nunito Sans',sans-serif;
+  font-size:11px;font-weight:500;letter-spacing:.08em;
+  padding:7px 16px; cursor:pointer; border-radius:2px; transition:all .2s;
+}
+.btn-print:hover{border-color:var(--blue);color:#fff;}
+
+@media print{
+  .nav-bar,.project-bar,.btn-print,.btn-export{display:none;}
+  .block-body{display:block!important;}
+  .block-body-inner{overflow:visible;}
+  .block-grid-fixed{min-width:0;}
+  .toggle-chev{display:none;}
+  body{background:#fff;}
+  .block-section{page-break-inside:avoid;}
+}
+
+/* Nav search */
+.srch-wrap{display:flex;align-items:center;gap:8px;padding:0 12px;border-left:1px solid rgba(33,52,61,.15);flex-shrink:0;}
+.srch-ico{color:#21343D;opacity:.4;font-size:15px;line-height:1;}
+.srch-inp{background:transparent;border:none;outline:none;font-family:'Nunito Sans',sans-serif;color:#21343D;font-size:12px;width:120px;padding:0;}
+.srch-inp::placeholder{color:#21343D;opacity:.35;}
+#fileInput{display:none;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.35);width:460px;max-width:92vw;overflow:hidden;}
+.modal-hd{background:#1B1D36;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.modal-hd h2{font-size:14px;font-weight:700;color:#fff;letter-spacing:.01em;}
+.modal-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;line-height:1;padding:0 2px;}
+.modal-close:hover{color:#fff;}
+.modal-body{padding:20px;}
+.modal-body p{font-size:13px;color:var(--body);line-height:1.6;margin-bottom:14px;}
+.modal-input-lbl{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;}
+.modal-input{width:100%;font-family:'Nunito Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);border:1px solid var(--rule);border-radius:2px;padding:8px 10px;outline:none;transition:border-color .15s;}
+.modal-input:focus{border-color:var(--blue);}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--rule);display:flex;justify-content:flex-end;gap:8px;}
+.modal-btn{font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:2px;cursor:pointer;border:1px solid;transition:all .15s;}
+.modal-btn-cancel{background:#fff;border-color:var(--rule);color:var(--muted);}
+.modal-btn-cancel:hover{border-color:var(--faint);color:var(--text);}
+.modal-btn-ok{background:var(--blue);border-color:var(--blue);color:#fff;}
+.modal-btn-ok:hover{background:#0d4a76;}
+.modal-btn-danger{background:#c0392b;border-color:#c0392b;color:#fff;}
+.modal-btn-danger:hover{background:#a93226;}
+.sessions-list{max-height:260px;overflow-y:auto;border:1px solid var(--rule);border-radius:2px;}
+.session-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--rule);transition:background .12s;}
+.session-item:last-child{border-bottom:none;}
+.session-item:hover{background:#f0f6fb;cursor:pointer;}
+.session-item.active-session{background:#EAF2FB;border-left:3px solid var(--blue);}
+.si-name{font-size:13px;font-weight:600;color:var(--text);flex:1;}
+.si-date{font-size:10px;color:var(--faint);white-space:nowrap;}
+.si-del{background:none;border:none;color:#ccc;font-size:15px;cursor:pointer;padding:0 3px;line-height:1;flex-shrink:0;}
+.si-del:hover{color:#c0392b;}
+.sessions-empty{padding:28px;text-align:center;font-size:13px;color:var(--faint);font-style:italic;}
+
+/* ── COMPLETION DATE field in block body ── */
+.bf-date-inp{
+  font-family:'Nunito Sans',sans-serif;
+  font-size:12px;font-weight:600;color:var(--text);
+  border:1px solid var(--rule);border-radius:2px;
+  padding:6px 8px;outline:none;transition:border-color .15s;
+  background:#fff;width:168px;
+}
+.bf-date-inp:focus{border-color:var(--blue);}
+.bf-days-badge{
+  display:inline-flex;align-items:baseline;gap:4px;
+  font-size:12px;font-weight:700;color:var(--blue);
+  background:var(--blue-lt);border:1px solid #b8d4ea;
+  border-radius:2px;padding:5px 10px;
+  white-space:nowrap;
+}
+.bf-days-num{font-size:17px;font-weight:800;line-height:1;}
+.bf-days-unit{font-size:10px;color:var(--muted);font-weight:600;}
+.bf-readonly-note{font-size:10px;color:var(--faint);margin-top:4px;}
+
+/* ── SCORECARD VIEW ── */
+#scorecardView{display:none;background:var(--off);min-height:60vh;}
+#scorecardView.active{display:block;}
+#app.scorecard-active{display:none;}
+
+.sc-wrap{padding:28px var(--px) 48px;}
+.sc-page-hd{
+  background:#1B1D36;border-radius:3px;
+  padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sc-page-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:.01em;}
+.sc-page-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:3px;}
+.sc-page-meta{font-size:11px;color:rgba(255,255,255,.55);text-align:right;line-height:1.6;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+.sc-page-meta strong{color:rgba(255,255,255,.9);}
+
+.sc-no-start{
+  background:#fff;border:1px solid var(--rule);border-radius:3px;
+  padding:40px;text-align:center;
+}
+.sc-no-start p{font-size:14px;color:var(--muted);font-weight:300;}
+.sc-no-start strong{color:var(--text);font-weight:700;}
+
+.sc-periods-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  border:1px solid var(--rule);border-radius:3px;overflow:hidden;
+}
+.sc-period{
+  background:#fff;border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;
+}
+.sc-period:last-child{border-right:none;}
+
+.sc-period-hd{
+  padding:12px 14px;border-bottom:1px solid var(--rule);
+  background:#F7F9FA;
+}
+.sc-period-num{font-size:12px;font-weight:700;color:var(--muted);}
+.sc-period-range{font-size:13px;font-weight:700;color:var(--text);margin-top:2px;line-height:1.3;}
+.sc-period-req{font-size:12px;color:var(--muted);margin-top:3px;}
+
+.sc-gauge{padding:12px 14px 10px;border-bottom:1px solid var(--rule);}
+.sc-gauge-track{height:5px;background:var(--rule);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+.sc-gauge-fill{height:100%;border-radius:3px;transition:width .3s;}
+.sc-gauge-fill.pass{background:#2E7D50;}
+.sc-gauge-fill.warn{background:#C17F00;}
+.sc-gauge-fill.fail{background:#C0392B;}
+.sc-gauge-nums{display:flex;align-items:baseline;gap:5px;}
+.sc-gauge-big{font-size:22px;font-weight:800;color:var(--text);line-height:1;}
+.sc-gauge-of{font-size:12px;color:var(--muted);}
+.sc-gauge-days{font-size:12px;color:var(--blue);font-weight:700;margin-left:auto;white-space:nowrap;}
+.sc-status{margin-top:4px;font-size:12px;font-weight:700;}
+.sc-status.pass{color:#1B5E38;}
+.sc-status.warn{color:#7A4500;}
+.sc-status.fail{color:#7A1A1A;}
+.sc-status.pend{color:var(--faint);}
+
+.sc-blocks-list{flex:1;padding:8px 0;}
+.sc-block-row{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 14px;border-bottom:1px solid #f0f4f7;
+}
+.sc-block-row:last-child{border-bottom:none;}
+.sc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sc-dot.done{background:#2E7D50;}
+.sc-block-name{font-size:12px;color:var(--body);flex:1;line-height:1.3;}
+.sc-block-date{font-size:12px;color:var(--muted);white-space:nowrap;}
+.sc-block-days{font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap;margin-left:4px;}
+
+.sc-empty-period{padding:20px 14px;font-size:12px;color:var(--faint);font-style:italic;}
+
+.sc-period-footer{
+  padding:8px 14px;border-top:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:space-between;
+  background:#F7F9FA;
+}
+.sc-footer-lbl{font-size:12px;color:var(--muted);}
+.sc-footer-val{font-size:12px;font-weight:700;color:var(--blue);}
+
+.sc-summary{
+  margin-top:16px;background:#fff;border:1px solid var(--rule);
+  border-radius:3px;padding:14px 18px;
+  display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+}
+.sc-sum-item{display:flex;flex-direction:column;gap:2px;}
+.sc-sum-val{font-size:18px;font-weight:800;color:var(--text);line-height:1;}
+.sc-sum-lbl{font-size:12px;color:var(--muted);}
+.sc-sum-sep{width:1px;height:32px;background:var(--rule);}
+
+/* Scorecard report print styles */
+@media print{
+  #scorecardView .sc-print-hide{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header>
+  <div style="display:flex;align-items:center;gap:0;">
+    <!-- Building blocks icon: 3 cubes, white outline only on header bg colour -->
+    <svg width="52" height="52" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:18px;">
+      <!-- Top cube -->
+      <polygon points="28,4 40,10 28,16 16,10" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <polygon points="28,16 40,10 40,22 28,28" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <polygon points="28,16 16,10 16,22 28,28" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <!-- Bottom-left cube -->
+      <polygon points="16,22 28,28 16,34 4,28" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <polygon points="16,34 28,28 28,40 16,46" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <polygon points="16,34 4,28 4,40 16,46" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <!-- Bottom-right cube -->
+      <polygon points="40,22 52,28 40,34 28,28" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <polygon points="40,34 52,28 52,40 40,46" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+      <polygon points="40,34 28,28 28,40 40,46" fill="#1B1D36" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div class="hd-title">VCF Adoption - Building Blocks Tracker</div>
+      <div class="hd-ver">Adoption Assessment &amp; Planning</div>
+      <div class="hd-pub">Version 0.4.1 | Published: April 30, 2026</div>
+    </div>
+  </div>
+  <div class="hd-right">
+    <div class="hd-stats">
+      <div class="hd-stat">
+        <div class="hd-stat-val" id="statSel">0</div>
+        <div class="hd-stat-lbl">Blocks Selected</div>
+      </div>
+      <div class="hd-stat">
+        <div class="hd-stat-val" id="statTotal">43</div>
+        <div class="hd-stat-lbl">Total Blocks</div>
+      </div>
+    </div>
+    <div class="hd-session">
+      <span class="hd-sess-name" id="sbSessionName">No session loaded</span>
+      <div class="hd-sess-sep"></div>
+      <button class="hd-sess-btn" onclick="cmdExportJSON()" title="Export session as JSON">&#8599; Export</button>
+      <button class="hd-sess-btn" onclick="document.getElementById('fileInput').click()" title="Import session from JSON">&#8593; Import</button>
+      <input type="file" id="fileInput" accept=".json" onchange="cmdImportJSON(this)">
+      <div class="hd-sess-sep"></div>
+      <button class="hd-sess-btn hd-sess-danger" onclick="modalClear()">&#10005; Clear</button>
+      <div class="hd-sess-sep"></div>
+      <button class="hd-sess-btn hd-sess-report" onclick="exportReport()">&#8595; Report</button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav class="nav-bar">
+  <div class="nav-dropdown-wrap" id="navDropdownWrap">
+    <select class="nav-dropdown" id="viewDropdown" onchange="setFilterFromDropdown(this)">
+      <option value="all">All Blocks</option>
+      <option value="selected">Selected Only</option>
+      <option value="unselected">Not Selected</option>
+    </select>
+  </div>
+  <button class="fbtn active" onclick="setFilter('all',this)" data-filter="all">All</button>
+  <button class="fbtn" onclick="setFilter('cat-pf',this)" data-filter="cat-pf">Platform Foundation</button>
+  <button class="fbtn" onclick="setFilter('cat-st',this)" data-filter="cat-st">Storage</button>
+  <button class="fbtn" onclick="setFilter('cat-nw',this)" data-filter="cat-nw">Networking</button>
+  <button class="fbtn" onclick="setFilter('cat-op',this)" data-filter="cat-op">Operations</button>
+  <button class="fbtn" onclick="setFilter('cat-ap',this)" data-filter="cat-ap">Apps &amp; Cloud</button>
+  <button class="fbtn" onclick="setFilter('cat-re',this)" data-filter="cat-re">Resilience</button>
+  <button class="fbtn" onclick="setFilter('cat-sc',this)" data-filter="cat-sc">Security</button>
+  <div class="nav-sp"></div>
+  <!-- Search -->
+  <div class="srch-wrap">
+    <span class="srch-ico">⌕</span>
+    <input class="srch-inp" type="text" placeholder="Search…" id="srch" oninput="doSearch(this.value)">
+  </div>
+  <!-- Scorecard -->
+  <div style="display:flex;align-items:stretch;border-left:1px solid rgba(33,52,61,.15);flex-shrink:0;">
+    <button class="fbtn" id="btnScorecard" onclick="toggleScorecard()" data-sc="0" style="font-weight:700;letter-spacing:.01em;">&#9776; Scorecard</button>
+  </div>
+</nav>
+
+<!-- ══════════════════ MODALS ══════════════════ -->
+
+<!-- Clear Confirmation -->
+<div class="modal-overlay" id="modalClearEl">
+  <div class="modal">
+    <div class="modal-hd"><h2>Clear Session</h2><button class="modal-close" onclick="closeModal('modalClearEl')">&#x2715;</button></div>
+    <div class="modal-body">
+      <p>This will clear all selections, ratings, and deliverables from the current session. This cannot be undone unless you have saved first.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal('modalClearEl')">Cancel</button>
+      <button class="modal-btn modal-btn-danger" onclick="confirmClear()">Clear Everything</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ PROJECT DETAILS BAR ══════════════════ -->
+<div class="project-bar">
+  <div class="project-field" id="oppField">
+    <input class="pf-input" id="oppNum" type="text" placeholder="Opportunity #" autocomplete="off">
+  </div>
+  <div class="project-field" id="custField">
+    <input class="pf-input" id="custName" type="text" placeholder="Customer" autocomplete="off">
+  </div>
+  <div class="project-field" id="partField">
+    <input class="pf-input" id="partnerName" type="text" placeholder="Partner" autocomplete="off">
+  </div>
+  <div class="project-field" id="startField" style="gap:8px;border-right:none;">
+    <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;letter-spacing:.02em;flex-shrink:0;">Contract Start</span>
+    <div style="position:relative;width:22px;height:22px;overflow:hidden;flex-shrink:0;">
+      <input id="engStart" type="date"
+        style="position:absolute;right:0;top:0;width:220px;height:22px;direction:rtl;opacity:1;border:none;background:transparent;outline:none;cursor:pointer;color-scheme:light;font-size:12px;padding:0;"
+        onchange="onEngStartChange(this.value)">
+    </div>
+    <span id="engStartDisplay" style="font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;display:none;"></span>
+  </div>
+</div>
+
+<!-- ══════════════════ CONTENT — generated by JS ══════════════════ -->
+<div id="app"></div>
+
+<!-- ══════════════════ SCORECARD VIEW ══════════════════ -->
+<div id="scorecardView"></div>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer>
+  <div>
+    <div class="ft-title">VCF Adoption - Building Blocks Tracker</div>
+  </div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════════
+   DATA
+════════════════════════════════════════════════ */
+const CATEGORIES = [
+{id:'pf', num:'01', label:'Platform Foundation', blocks:[
+  {id:'pf1', name:'Assess & Review Workshop',
+   days:2,
+   eval:['VCF 9 Deployment Roadmap is signed off by executive and technical leads','Reseller Workshop mapped VCF Management Domain benefits to IT goals'],
+   steps:['Conduct VCF 9 Capability Workshop to map business goals to VCF full-stack features','Define success criteria and KPIs for the 60-month adoption journey'],
+   deps:['None'],
+   sow:['Signed VCF 9 Deployment Roadmap','Customer Business Case & KPI Map'],
+   vars:['Infra: Greenfield vs Brownfield deployment strategy','Sec: Industry-specific compliance alignment (e.g., HIPAA/PCI)'],
+   docs:[{label:'VCF Planning and Preparation',url:'https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/assets/vmware-cis/vcf/vcf-9.0-planning-and-preparation-workbook.xlsx'}]},
+  {id:'pf2', name:'Site Readiness Validation',
+   days:2,
+   eval:['All VCF 9 deployment prerequisites validated with a signed "Site Readiness Report"','Hardware compatibility (HCL) verified for all physical hosts and NICs','Hardware compatibility (HCL) verified for all physical hosts and NICs'],
+   steps:['Validate physical network (ToR, MTU) and hardware compatibility against the VCF 9 HCL','Verify DNS, NTP, and IP allocation prerequisites for the management domain'],
+   deps:['Assess & Review Workshop'],
+   sow:['Signed Site Readiness Report','Validated Infrastructure BOM/HCL Audit'],
+   vars:['Infra: VxRail vs VCF ReadyNode prerequisites','Sec: Air-gapped vs Connected environment prep'],
+   docs:[{label:'VCF Site Readiness Checklist',url:'https://compatibilityguide.broadcom.com/'}]},
+  {id:'pf3', name:'VCF Management Domain',
+   days:4,
+   eval:['VCF Management Console is active, providing a single interface across all domains','Cross-component orchestration validated via global configuration task execution'],
+   steps:['Complete the VCF 9 installer workflow to deploy a healthy Management Domain (>7 appliances)','Activate the VCF Management Console and verify cross-component orchestration capabilities'],
+   deps:['Assess & Review Workshop','Site Readiness Validation'],
+   sow:['Functional VCF Management Console accessible via SSO','Management Domain Build & Health Report'],
+   vars:['Infra: Consolidated vs Distributed architecture deployment','HA vs non-HA management domains'],
+   docs:[{label:'VCF Installer and Domain Creation',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/deployment/deploying-a-new-vmware-cloud-foundation-or-vmware-vsphere-foundation-private-cloud-/deploy-a-new-vcf-fleet-or-a-new-vcf-instance.html'}]},
+  {id:'pf4', name:'Identity Broker & Multi-Tenancy',
+   days:3,
+   eval:['Identity Broker is active, federating VCF instances into a single SSO domain','At least one Tenant Organization is defined with isolated RBAC and resource quotas'],
+   steps:['Deploy the VCF Identity Broker and federate with the corporate Identity Provider (IdP)','Define initial Tenant Organizations with isolated RBAC and resource quotas'],
+   deps:['VCF Management Domain'],
+   sow:['IdP Federation Configuration Document','Functional Multi-Tenant SSO Environment'],
+   vars:['Infra: Single-site SSO vs Global Federated SSO','Sec: Internal vs OIDC integration requirements'],
+   docs:[{label:'VCF Identity Broker Configuration',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/fleet-management/what-is/deployment-models-for-sso.html'}]},
+  {id:'pf5', name:'Solution License Management',
+   days:2,
+   eval:['All VCF 9 entitlements are registered in the Business Services Portal','Licenses visible in VCF Operations, showing usage across the fleet'],
+   steps:['Register VCF 9 entitlements in the Business Services Portal','Activate centralized license monitoring and reporting within VCF Operations'],
+   deps:['VCF Management Domain'],
+   sow:['License Entitlement & Allocation Map','Active Fleet-wide License Consumption Dashboard'],
+   vars:['Infra: Connected vs Disconnected (Dark Site) licensing','Sec: Core-based vs Legacy licensing conversion'],
+   docs:[{label:'VCF Operations License Management',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/licensing/manage-licenses-in-the-vcf-business-services-console.html'}]},
+]},
+{id:'st', num:'02', label:'Storage / Datastore', blocks:[
+  {id:'st1', name:'Assess & Review (vSAN)',
+   days:2,
+   eval:['All vSAN IOPS, latency, and throughput requirements are documented','vSAN ESA migration strategy is approved for legacy storage workloads'],
+   steps:['Audit existing storage workloads to define SPBM performance requirements','Document the vSAN ESA failure domain and cluster-level design strategy'],
+   deps:['Assess & Review Workshop'],
+   sow:['Documented Storage Design & Migration Plan','Performance Baseline & Capacity Forecast'],
+   vars:['Infra: SAN-to-vSAN migration vs Greenfield deployment','Sec: Data-at-rest encryption compliance requirements'],
+   docs:[{label:'vSAN Design Guide',url:'https://www.vmware.com/docs/vmware-vsan-design-guide'}]},
+  {id:'st2', name:'vSAN ESA Implementation',
+   days:4,
+   eval:['vSAN ESA is active on NVMe hardware with performance testing completed','SPBM policies are defined and applied to 80% of production workloads'],
+   steps:['Configure vSAN ESA clusters and validate hardware performance against baselines','Define and validate the SPBM policy catalog against workload requirements'],
+   deps:['Site Readiness Validation','Assess & Review (vSAN)'],
+   sow:['Functional vSAN ESA Cluster','Validated SPBM Policy Catalog'],
+   vars:['Infra: 2-node vs stretch cluster environments','Infra: <5ms latency (Standard) vs high-latency Stretch'],
+   docs:[{label:'vSAN Stretch Cluster Guide',url:'https://www.vmware.com/docs/vsan-stretched-cluster-guide'}]},
+  {id:'st3', name:'NVMe Memory Tiering',
+   days:3,
+   eval:['Memory tiering is active on host clusters with cold pages offloading to NVMe','Consolidation monitoring confirms measurable VM density increase (target 30–40%)'],
+   steps:['Enable Memory Tiering on supported host clusters and verify NVMe targets','Validate "Cold Page" offloading and monitor for consolidation gains'],
+   deps:['VCF Management Domain'],
+   sow:['Active NVMe Memory Tiering Configuration','Performance Report documenting consolidation gains'],
+   vars:['Infra: Host-specific GPU/Memory architecture constraints','Sec: NVMe data persistence requirements for tiered memory'],
+   docs:[{label:'vSphere Memory Tiering',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/9-0/vsphere-resource-management/memory-tiering-over-nvme/memory-tiering-configuration.html'}]},
+]},
+{id:'nw', num:'03', label:'Networking & Connectivity (Network Fabric)', blocks:[
+  {id:'nw1', name:'Assess & Review (NSX)',
+   days:2,
+   eval:['Network underlay (MTU 1600+, BGP readiness) is documented and validated','Edge Cluster sizing and North-South exit strategy are approved'],
+   steps:['Perform physical network audit for MTU and Jumbo Frame support','Document Edge Node placement and routing requirements (VLAN/Overlay)'],
+   deps:['Assess & Review Workshop'],
+   sow:['Signed NSX Architecture & Design Document','Validated Underlay Readiness Report'],
+   vars:['Infra: Dedicated vs Collapsed Edge design','Sec: Overlapping IP space (NAT) requirements'],
+   docs:[{label:'NSX Design Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/design/design-library/network-designs.html'}]},
+  {id:'nw2', name:'NSX Overlay Networking',
+   days:4,
+   eval:['NSX Overlay fabric is active with all Transport Nodes successfully communicating','HA Edge Cluster is deployed and providing stable N-S routing connectivity'],
+   steps:['Deploy NSX Transport Zones and Uplink Profiles across host clusters','Configure HA Edge Nodes and establish the centralized Edge Cluster'],
+   deps:['Site Readiness Validation','Assess & Review (NSX)'],
+   sow:['Functional NSX Overlay Fabric','Validated HA Edge Cluster Config Report'],
+   vars:['Infra: Bare Metal vs Edge VM sizing','Sec: Encryption requirements for N-S traffic'],
+   docs:[{label:'NSX Edge Deployment',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/advanced-network-management/administration-guide/installing-nsx-edge/edge-vm-system-requirements.html'}]},
+  {id:'nw3', name:'VCF VPC',
+   days:3,
+   eval:['VCF Transit Gateway is active and managing VPC-to-VPC routing','Non-admin users can successfully self-provision VPCs and verify connectivity'],
+   steps:['Deploy the VCF Transit Gateway within the VCF Management Console','Configure VPC routing policies and developer-level access'],
+   deps:['VCF Management Domain','NSX Overlay Networking'],
+   sow:['Functional VCF Transit Gateway','Validated VPC Self-Service Environment'],
+   vars:['Infra: Isolated VPCs vs Shared Transit services','Sec: Inter-site Transit Gateway extension'],
+   docs:[{label:'VCF Networking & VPC',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/advanced-network-management/administration-guide/virtual-private-cloud-in-nsx/transit-gateways/configure-a-transit-gateway.html'}]},
+  {id:'nw4', name:'NSX Edge Connectivity',
+   days:3,
+   eval:['Dynamic BGP peering is established between Tier-0 and physical ToR switches','Route redistribution and prefix lists are actively policing traffic flow'],
+   steps:['Establish BGP peering and configure route redistribution policies','Validate North-South traffic path and ECMP performance'],
+   deps:['NSX Overlay Networking'],
+   sow:['Validated BGP Peering & Routing Report','Operational N-S Traffic Path'],
+   vars:['Infra: Dynamic BGP vs Static routing','Sec: VRF-Lite vs Global routing table peering'],
+   docs:[{label:'NSX Routing & BGP',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/advanced-network-management/administration-guide/tier-0-gateways.html'}]},
+]},
+{id:'op', num:'04', label:'Operational Observability', blocks:[
+  {id:'op1', name:'Assess & Review (VCF Operations)',
+   days:2,
+   eval:['Monitoring thresholds and alerting notification paths are defined for all SDDC layers','Infrastructure metadata (Tags) is mapped to logical business applications'],
+   steps:['Audit operational requirements for alerting and ITSM integration','Document the global tagging and metadata schema for fleet-wide visibility'],
+   deps:['Assess & Review Workshop'],
+   sow:['Signed Operations Design & Alerting Matrix','Documented ITSM Integration Plan'],
+   vars:['Infra: Integrated VCF Ops vs 3rd-party (Splunk)','Sec: Data retention for performance metrics'],
+   docs:[{label:'VCF Operations Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/release-notes/vmware-cloud-foundation-9-0-1-release-notes/vcf-operations-9-0-1-0000.html'}]},
+  {id:'op2', name:'Dashboards & Logs',
+   days:3,
+   eval:['Unified dashboards provide real-time visibility from hardware to application layers','Centralized log collection is active with real-time security alerting for system failures'],
+   steps:['Activate full-stack dashboards and configure centralized log forwarding (VCF Operations for Logs)','Create persona-based views and configure critical log-based alerts'],
+   deps:['VCF Management Domain','Assess & Review (VCF Operations)'],
+   sow:['Functional Persona-Based Dashboard Suite','Centralized Log Collection & Alerting Matrix'],
+   vars:['Infra: Single-site vs Global Fleet aggregation','Sec: RBAC-restricted dashboard/log access'],
+   docs:[{label:'VCF Ops Dashboards & Logs',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/infrastructure-operations/dashboards-and-widgets.html'}]},
+  {id:'op3', name:'Fleet Management',
+   days:3,
+   eval:['VCF Fleet Management is active, aggregating health/inventory across multiple instances','A global fleet health check is successfully executed from the VCF Management console'],
+   steps:['Activate Fleet Management and register multiple geographic VCF instances','Validate cross-site visibility and global resource inventory consistency'],
+   deps:['VCF Management Domain','Assess & Review (VCF Operations)'],
+   sow:['Active VCF Fleet Management Console','Signed-off Global Fleet Inventory Report'],
+   vars:['Infra: Centralized vs Decentralized management at remote sites','Sec: Cross-WAN link considerations'],
+   docs:[{label:'VCF Fleet Management',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/fleet-management.html'}]},
+  {id:'op4', name:'Capacity Management (Forecast & Right-size)',
+   days:3,
+   eval:['Capacity modeling is providing active "Time-to-Full" projections for compute/storage','Right-sizing recommendations are being executed to reclaim idle/oversized resources'],
+   steps:['Run capacity modeling and generate resource reclamation reports','Define right-sizing actions and validate reclaimed capacity metrics'],
+   deps:['VCF Management Domain','Assess & Review (VCF Operations)'],
+   sow:['Monthly Capacity & Reclamation Report','Validated Resource Forecasting Model'],
+   vars:['Infra: Standard VM vs K8s pod autoscaling','Sec: Policy-driven vs Manual optimization'],
+   docs:[{label:'VCF Capacity Planning',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/cost-and-capacity-management.html'}]},
+  {id:'op5', name:'Lifecycle Management',
+   days:3,
+   eval:['LCM baselines (ESXi/Firmware) are defined for all workload domains','A predictive patching pre-check is successfully run to validate update readiness'],
+   steps:['Define standardized image baselines and execute lifecycle update pre-checks','Validate non-disruptive patching workflows across multiple host clusters'],
+   deps:['VCF Management Domain','Fleet Management'],
+   sow:['Validated Lifecycle (vLCM) Image Baseline','Documented Non-Disruptive Patching Procedure'],
+   vars:['Infra: Vendor-specific firmware (Dell/HPE/Lenovo)','Sec: Emergency security patch scheduling'],
+   docs:[{label:'VCF Lifecycle Management',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/fleet-management/certificate-management-9-0.html'}]},
+  {id:'op6', name:'Certificate & Password Mgmt',
+   days:2,
+   eval:['Automated certificate rotation (via SDDC Manager) is active for all components','A validated credential rotation test for system and service accounts is executed in production'],
+   steps:['Configure automated certificate rotation and implement credential rotation schedules','Execute a validated rotation test for system and service accounts'],
+   deps:['VCF Management Domain'],
+   sow:['Signed Cert & Credential Management Policy','Successful FIPS compliance validation for encryption keys'],
+   vars:['Infra: Internal vs 3rd-party CA integration','Sec: FIPS compliance for encryption keys'],
+   docs:[{label:'VCF Security & Certificates',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/fleet-management/certificate-management-9-0.html'}]},
+  {id:'op7', name:'Compliance Management',
+   days:3,
+   eval:['Compliance benchmarks (PCI, HIPAA, NIST) are active for automated fleet scanning','Scheduled compliance reports are automatically delivered to audit stakeholders'],
+   steps:['Activate platform benchmarks and configure scheduled report delivery','Automate compliance audit findings against security hardening baselines'],
+   deps:['Dashboards & Logs','Lifecycle Management'],
+   sow:['Automated Compliance Audit Reports','Signed-off Security Hardening Baseline'],
+   vars:['Infra: Standard vs Industry-specific mandates','Sec: Real-time vs Periodic scanning frequency'],
+   docs:[{label:'VCF Compliance & Audit',url:'https://techdocs.broadcom.com/us/en/vmware-cis/aria/aria-operations/8-18/vmware-aria-operations-configuration-guide-8-18/viewing-and-configuring-compliance.html'}]},
+  {id:'op8', name:'Log Management & Analytics',
+   days:2,
+   eval:['Centralized log collection is active for all VCF components','Real-time alerting is configured for critical security and system events'],
+   steps:['Configure all VCF components to forward system logs to a centralized analysis engine','Validate real-time security alerting on critical system failures and access violations'],
+   deps:['Dashboards & Logs'],
+   sow:['Centralized Log Collection & Analysis Environment','Validated Security Event Alerting Matrix'],
+   vars:['Infra: On-prem log storage vs Cloud-based SIEM integration','Sec: Centralized log archiving and legal hold requirements'],
+   docs:[{label:'VCF Operations for Logs',url:'https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/assets/vmware-cis/vcf-logs/vcf-operations-for-logs-90.pdf'}]},
+  {id:'op9', name:'Proactive Support & Diagnostics',
+   days:2,
+   eval:['Proactive diagnostic alerts are routed to support team channels','Automated support bundle generation is active and validated'],
+   steps:['Enable proactive diagnostics and configure alert routing to support channels','Validate automated bundle generation and submission workflows'],
+   deps:['Fleet Management','Dashboards & Logs'],
+   sow:['Active Proactive Alerting Configuration','Validated Support Bundle Submission Workflow'],
+   vars:['Infra: Broadcom-integrated vs 3rd-party ITSM routing','Sec: On-demand vs Scheduled diagnostics'],
+   docs:[{label:'VCF Troubleshooting',url:'https://techdocs.broadcom.com/us/en/vmware-cis/aria/aria-operations/8-18/vmware-aria-operations-user-guide-8-18/troubleshooting-your-managed-environment/troubleshooting-workbench-home-page.html'}]},
+  {id:'op10', name:'FinOps (Chargeback & Showback)',
+   days:2,
+   eval:['VCF Operations is integrated with the private cloud cost-attribution chargeback/showback reports','Automated consumption reports are being delivered to business unit owners'],
+   steps:['Integrate VCF Ops with pricing models and deliver first chargeback/showback reports','Validate cost-transparency dashboards for multi-tenant resource consumption'],
+   deps:['Dashboards & Logs','Capacity Management'],
+   sow:['Active FinOps Cost Transparency Dashboard','Published Business Unit Showback Report'],
+   vars:['Infra: Fixed-cost vs Pay-per-use models','Sec: Attribution of security/license overhead'],
+   docs:[{label:'VCF FinOps Management',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/cost-and-capacity-management.html'}]},
+  {id:'op11', name:'Hybrid Cloud Mobility (HCX)',
+   days:4,
+   eval:['HCX Manager and Interconnect are active and paired with a remote site','A test migration of a production-representative VM is successfully completed'],
+   steps:['Deploy and pair HCX Manager appliances across local and remote sites','Configure Mesh services and execute a validated test migration (RAV/vMotion)'],
+   deps:['VCF Management Domain','NSX Overlay Networking','NSX Edge Connectivity'],
+   sow:['Functional Workload Mobility Platform','Signed Migration Readiness & Test Report'],
+   vars:['Infra: Bulk Migration vs Replication-assisted vMotion','Sec: Encryption & bandwidth throttling requirements'],
+   docs:[{label:'HCX Deployment Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/workload-mobility/getting-started-with-vmware-hcx-vcf-9-0/introduction-to-hcx-site-manager-deployments/hcx-connector-and-hcx-cloud-sites.html'}]},
+]},
+{id:'ap', num:'05', label:'Apps & Cloud Consumption', blocks:[
+  {id:'ap1', name:'Assess & Review (Automation/Apps)',
+   days:2,
+   eval:['App consumption models (IaaS vs PaaS) are defined for developer teams','Service catalog taxonomy and blueprint specifications are approved'],
+   steps:['Audit developer requirements and define blueprint standards','Map the lifecycle management path for self-service resources'],
+   deps:['Assess & Review Workshop'],
+   sow:['Signed App Consumption Strategy','Approved Catalog Blueprint Specs'],
+   vars:['Infra: Standard VM vs multi-tier app stacks','Sec: Manual vs Automated approval workflows'],
+   docs:[{label:'VCF Automation Deployment',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/overview-of-vmware-cloud-foundation-9/what-is-vmware-cloud-foundation-and-vmware-vsphere-foundation/vcf-automation-overview.html'}]},
+  {id:'ap2', name:'Infrastructure-as-Code',
+   days:3,
+   eval:['Supported source code repository is active with validated pull-request workflows','A "Hello World" infrastructure stack is successfully deployed via code'],
+   steps:['Establish the source code repo structure and CI/CD integration','Implement secret management and validate automated provisioning'],
+   deps:['Hybrid Cloud Mobility (HCX)','Assess & Review (Automation/Apps)'],
+   sow:['Operational GitOps Infrastructure Repo','Validated CI/CD Provisioning Pipeline'],
+   vars:['Infra: Terraform vs Native VCF APIs','Sec: External Secret Store integration (Vault)'],
+   docs:[{label:'GitOps & IaC Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/organization-management/administering-all-apps-organizations-in-vcfa-automation/integrating-vcfa-with-other-applications/integrating-vcfa-with-git.html'}]},
+  {id:'ap3', name:'Self-Service Catalog',
+   days:3,
+   eval:['Service Broker portal is active with policy-driven governance'],
+   steps:['Configure the portal with curated blueprints and resource quotas'],
+   deps:['VCF Management Domain'],
+   sow:['Functional Self-Service Catalog Portal'],
+   vars:['Infra: Internal vs ServiceNow integration'],
+   docs:[{label:'Service Broker Config',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/building-your-cloud-applications/getting-started-with-the-tools-for-building-applications/getting-started-with-the-vcf-automation-catalog.html'}]},
+  {id:'ap4', name:'VCF Kubernetes Service (VKS)',
+   days:4,
+   eval:['Supervisor Cluster is active with defined storage and network classes','Developer-level access to the K8s API is verified and operational'],
+   steps:['Activate the Supervisor Cluster and define resource classes','Validate K8s endpoint connectivity and API authentication'],
+   deps:['VCF Management Domain'],
+   sow:['Functional VKS Supervisor Cluster','Documented K8s Storage/Network Classes'],
+   vars:['Infra: Standard vs NSX-integrated VPC networking','Sec: Public vs Private K8s API access'],
+   docs:[{label:'VKS Foundation Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/organization-management/managing-vks-clusters-with-vks-cluster-management/vks-cluster-management-overview/organizations-projects-and-clusters.html'}]},
+  {id:'ap5', name:'Enterprise Image Registry (Harbor)',
+   days:3,
+   eval:['Harbor registry is active with image signing and vulnerability scanning enabled','Production-ready images are successfully pushed and pulled from the registry'],
+   steps:['Deploy Harbor and configure project-level security policies','Integrate with IdP and configure image replication or mirroring'],
+   deps:['Self-Service Catalog','VCF Kubernetes Service (VKS)'],
+   sow:['Secure Container Registry (Harbor) Instance','Validated Registry Security & Scanning Policy'],
+   vars:['Infra: Local vSAN vs External storage for images','Sec: Image signing (Notary) requirements'],
+   docs:[{label:'Harbor Registry Admin',url:'https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/release-notes/vmware-cloud-foundation-90-release-notes/platform-whats-new/whats-new-vcf-automation.html'}]},
+  {id:'ap6', name:'Data Services Manager (DSM)',
+   days:3,
+   eval:['DSM provider is active with database VM templates successfully configured','Automated backup and snapshot policies are active for managed databases'],
+   steps:['Deploy the DSM provider and define the database service catalog','Activate lifecycle management and validate automated DB provisioning'],
+   deps:['Self-Service Catalog','VCF Kubernetes Service (VKS)'],
+   sow:['Operational DSM Management Instance','Validated Database Self-Service Workflow'],
+   vars:['Infra: Local vSAN vs External DB storage','Sec: DB-level encryption and audit logging'],
+   docs:[{label:'Data Services Manager Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/dsm/data-services-manager/9-0.html'}]},
+  {id:'ap7', name:'Private AI Services',
+   days:4,
+   eval:['GPU-enabled clusters are integrated with the VKS runtime for AI workloads','Fast-Suspend-Resume (FSR) is validated for maximizing GPU hardware efficiency'],
+   steps:['Configure GPU clusters and integrate with the container runtime','Execute FSR validation tests and monitor GPU utilization metrics'],
+   deps:['None'],
+   sow:['Functional GPU-Accelerated AI Runtime','FSR Performance & Validation Report'],
+   vars:['Infra: vGPU vs Direct Pass-through','Sec: AI workload isolation and data sovereignty'],
+   docs:[{label:'VCF Private AI Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/private-ai/foundation-with-nvidia/9-0/private-ai-foundation-9-x.html'}]},
+  {id:'ap8', name:'Avi Load Balancer (App Ingress)',
+   days:3,
+   eval:['Avi Load Balancer (NSX ALB) is active and managing L7 application ingress','Standardized SSL and WAF profiles are actively policing production endpoints'],
+   steps:['Integrate Avi controllers and configure the native VCF ingress provider','Apply L7 security profiles and validate production traffic ingress'],
+   deps:['VCF VPC'],
+   sow:['Functional Avi LB Controller Cluster','Validated L7 Application Ingress Audit'],
+   vars:['Infra: Software LB vs Hardware integration','Sec: WAF policy tuning and mTLS requirements'],
+   docs:[{label:'Avi Load Balancing Guide',url:'https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/avi-load-balancer/avi-load-balancer/31-2/vmware-avi-load-balancer-administration-guide.html'}]},
+]},
+{id:'re', num:'06', label:'Resilience & Recovery', blocks:[
+  {id:'re1', name:'Assess & Review (DR/Cyber)',
+   days:2,
+   eval:['Application RPO/RTO tiers are documented and signed off by the business','Cyber-recovery "Clean Room" strategy is approved by the CISO'],
+   steps:['Audit application tiers and define recovery priority groups','Map inter-site network bandwidth to required data replication rates'],
+   deps:['Assess & Review Workshop'],
+   sow:['Signed BCDR & Cyber Recovery Strategy','Application Tiering & Recovery Matrix'],
+   vars:['Active-Active vs Active-Passive replication','Regulatory air-gap mandates'],
+   docs:[{label:'VLR System Requirements',url:'https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery/live-recovery-appliance/9-0-4/site-recovery-manager-appliance-overview/site-recovery-manager-system-requirements.html'}]},
+  {id:'re2', name:'Site Recovery (SRM or ACC SRM)',
+   days:4,
+   eval:['SRM servers are paired and resource mappings (Compute/Network) are verified','Storage Policy Protection Groups (SPGP) or VM groups are successfully created'],
+   steps:['Pair SRM instances and configure global inventory mappings','Group protected VMs and verify site-to-site resource compatibility'],
+   deps:['VCF Management Domain','NSX Overlay Networking','Assess & Review (DR/Cyber)'],
+   sow:['Functional SRM Site Pairing Config','Documented Resource Mapping Inventory'],
+   vars:['1:1 Recovery vs N:1 Shared Recovery','Cross-site firewall rule sync'],
+   docs:[{label:'SRM Configuration Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery/live-recovery-appliance/9-0-4/site-recovery-manager-appliance-overview/deploy-the-site-recovery-manager-virtual-appliance.html'}]},
+  {id:'re3', name:'Cyber Recovery (Cloud or On Prem)',
+   days:4,
+   eval:['An isolated Cyber Recovery Vault is active with automated configuration','Established isolated vault and configured immutable retention'],
+   steps:['Establish the isolated vault and configure immutable retention','Replicate test workloads and verify vault resource availability'],
+   deps:['vSAN ESA Implementation'],
+   sow:['Functional Clean Room Environment'],
+   vars:['On-prem physical vs Cloud-based','Cold DR vs Pilot Light (Warm) DR'],
+   docs:[{label:'Cyber Recovery Checklist',url:'https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery/live-cyber-recovery/saas/pre-deployment-checklist.html'}]},
+  {id:'re4', name:'Cloud Recovery',
+   days:3,
+   eval:['A hybrid link to a VMC recovery endpoint is active and paired','A "Pilot Light" workload is successfully replicated and verified in the cloud'],
+   steps:['Establish connectivity to the cloud recovery site and pair management layers','Replicate test workloads and verify cloud-side resource availability'],
+   deps:['Assess & Review (DR/Cyber)','NSX Overlay Networking'],
+   sow:['Operational Hybrid Cloud Recovery Link','Cloud Recovery Functional Test Report'],
+   vars:['Cold DR vs Pilot Light (Warm) DR','Egress cost modeling for failover'],
+   docs:[{label:'VLR Cloud Recovery Onboarding',url:'https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery/live-cyber-recovery/saas/using-vmware-live-cyber-recovery/vmware-live-cyber-recovery-components-and-architecture/onboard-to-vmware-live-cyber-recovery.html'}]},
+]},
+{id:'sc', num:'07', label:'Security & Compliance', blocks:[
+  {id:'sc1', name:'Assess & Review (Security)',
+   days:2,
+   eval:['Zero-Trust security document signed off','Tagging conventions standardized across the fleet'],
+   steps:['Audit existing security zones and define Zero-Trust tagging standards','Document policy hierarchy (Infra to App rules)'],
+   deps:['Assess & Review Workshop'],
+   sow:['Signed Zero-Trust Security Design','Standardized Security Tagging Schema'],
+   vars:['Per-tenant vs Per-app isolation','3rd party SIEM integration'],
+   docs:[{label:'VCF Security Design',url:'https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/vdefend/security-services-platform/5-1/security-services-platform-overview.html'}]},
+  {id:'sc2', name:'Distributed Firewall (DFW)',
+   days:3,
+   eval:['DFW globally active across all Workload Domains','"Default-Drop" posture enforced on non-management segments'],
+   steps:['Enable DFW and implement "Default-Drop" on workload segments','Configure management-plane access restrictions'],
+   deps:['NSX Overlay Networking','NSX Edge Connectivity'],
+   sow:['Functional Global DFW Implementation','Validated "Default-Drop" Audit Log'],
+   vars:['Infra: Greenfield vs Brownfield discovery','Sec: Dynamic Tags vs Static IP rules'],
+   docs:[{label:'NSX DFW Admin Guide',url:'https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/vdefend/vdefend-firewall/9-0/vdefend-distributed-firewall.html'}]},
+  {id:'sc3', name:'vDefend ATP (Distributed IDS/IPS)',
+   days:3,
+   eval:['Advanced threat detection signatures active on production segments','IDS engine integrated with VCF Operations for real-time alerting'],
+   steps:['Configure distributed threat signatures and integrate alerting with VCF Ops','Execute a signature update and verify real-time security alerting'],
+   deps:['Assess & Review (Security)'],
+   sow:['Operational IDS/IPS Protection','Active Security Alerting Dashboard'],
+   vars:['Alert-only vs Block-and-Alert modes','Global vs Local signature management'],
+   docs:[{label:'vDefend ATP Guide',url:'https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/vdefend/vdefend-atp/9-0/nsx-ids-ips-and-nsx-malware-prevention.html'}]},
+  {id:'sc4', name:'vDefend ATP (Malware Prevention & Sandbox)',
+   days:3,
+   eval:['Malware sandboxing active for high-security tiers','System completed a validated "test fire" against a simulated threat'],
+   steps:['Activate malware sandboxing and configure file-inspection policies','Perform a "test fire" to verify detection and sandbox analysis'],
+   deps:['Assess & Review (Security)'],
+   sow:['Functional ATP Malware Protection','Malware Detection & Sandbox Report'],
+   vars:['Local vs Cloud-based analysis','Automated vs Manual quarantine'],
+   docs:[{label:'vDefend Malware Protection',url:'https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/vdefend/vdefend-atp/9-0/malware-prevention-for-vmware-vdefend.html'}]},
+  {id:'sc5', name:'vDefend ATP (Identity-Aware Firewall)',
+   days:2,
+   eval:['Security rules successfully mapping IdP user identity to firewall enforcement','User-based access logs captured and validated'],
+   steps:['Map IdP user identity to firewall enforcement points','Validate user-based access logs within the log management system'],
+   deps:['Identity Broker & Multi-Tenancy','Assess & Review (Security)'],
+   sow:['Functional ID-Aware Security Policy','Signed User-Access Audit Verification'],
+   vars:['AD vs OIDC identity sources','Remote VPN vs Internal users'],
+   docs:[{label:'NSX Identity FW Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-1/administration-guide/security/identity-firewall.html'}]},
+  {id:'sc6', name:'vDefend ATP (Security Intelligence)',
+   days:2,
+   eval:['Real-time traffic visualization active to audit flows and dependencies','Security policy refined based on traffic analytics findings'],
+   steps:['Activate traffic visualization for dependency discovery','Refine micro-segmentation policies based on automated findings'],
+   deps:['Assess & Review (Security)'],
+   sow:['Comprehensive App Traffic Map','Security Policy Refinement Report'],
+   vars:['Continuous vs Periodic discovery','Automated vs Manual refinement'],
+   docs:[{label:'Security Intelligence Guide',url:'https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/vdefend/vdefend-atp/9-0/network-traffic-analysis-for-vmware-vdefend.html'}]},
+  {id:'sc7', name:'AVI LB (Layer-7 WAF & Ingress Security)',
+   days:2,
+   eval:['WAF policies active for internet-facing production apps','Ingress utilizes mTLS or standardized SSL termination'],
+   steps:['Apply WAF policies to production ingress points','Configure mTLS or SSL termination for all endpoints'],
+   deps:['Avi Load Balancer (App Ingress)','Assess & Review (Security)'],
+   sow:['Validated L7 WAF Protection Report','Functional mTLS/SSL Profile'],
+   vars:['Standard OWASP vs Custom WAF rules','Internal vs External ingress'],
+   docs:[{label:'NSX WAF Admin Guide',url:'https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-1/administration-guide/advanced-load-balancer-avi.html'}]},
+  {id:'sc8', name:'Salt (ACC)',
+   days:3,
+   eval:['Automated enforcement of compliance and configuration standards active','Dashboard provides continual status monitoring'],
+   steps:['Deploy ACC console and import configuration policies','Set desired host state, remediation workflows and compliance dashboards'],
+   deps:['Fleet Management','Compliance Management'],
+   sow:['Automated compliance enforcement active','Remediation evidence and Audit reports'],
+   vars:['Scale of deployment, how many clusters are remediated','Various compliance/audit standards to comply'],
+   docs:[{label:'Salt Stack Configuration',url:'https://techdocs.broadcom.com/us/en/vmware-cis/aria/aria-automation/8-18/assembler-on-prem-using-and-managing-master-map-8-18/maphead-designing-your-deployments/how-to-add-the-salt-minion-to-designs.html'}]},
+]},
+];
+
+/* ════════════════════════════════════════════════
+   RATINGS HELPERS
+════════════════════════════════════════════════ */
+const RATINGS = [
+  {val:'',    label:'— Select Rating —', cls:'rp-none'},
+  {val:'sa',  label:'Strongly Agree',    cls:'rp-sa'},
+  {val:'ma',  label:'Mostly Agree',      cls:'rp-ma'},
+  {val:'md',  label:'Mostly Disagree',   cls:'rp-md'},
+  {val:'sd',  label:'Strongly Disagree', cls:'rp-sd'},
+];
+const rcls = v => (RATINGS.find(r=>r.val===v)||RATINGS[0]).cls;
+const rlbl = v => (RATINGS.find(r=>r.val===v)||RATINGS[0]).label;
+const rOpts = cur => RATINGS.map(o=>`<option value="${o.val}"${cur===o.val?' selected':''}>${o.label}</option>`).join('');
+
+/* ── Dependency helpers ── */
+// Build a flat name→id lookup across all blocks
+const NAME_TO_ID = {};
+CATEGORIES.forEach(cat => cat.blocks.forEach(b => { NAME_TO_ID[b.name.toLowerCase()] = b.id; }));
+
+// Return display names of deps that are not yet selected (ignores 'None')
+function getMissingDeps(b) {
+  if (!b.deps || !b.deps.length) return [];
+  return b.deps
+    .filter(dep => dep.toLowerCase() !== 'none')
+    .filter(dep => {
+      const depId = NAME_TO_ID[dep.toLowerCase()];
+      return depId && !S.selected.has(depId);
+    });
+}
+
+// After a DOM-patch toggleSel, update dep warnings without full re-render
+function updateDepWarnings() {
+  CATEGORIES.forEach(cat => cat.blocks.forEach(b => {
+    const el = document.getElementById('bs-' + b.id);
+    if (!el) return;
+    const sel = S.selected.has(b.id);
+    const missing = sel ? getMissingDeps(b) : [];
+    const warn = missing.length > 0;
+    el.classList.toggle('dep-warn', warn);
+    // Update or remove the badge
+    const right = el.querySelector('.bh-right');
+    if (!right) return;
+    let badge = right.querySelector('.dep-badge');
+    if (warn) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'dep-badge';
+        right.insertBefore(badge, right.firstChild);
+      }
+      badge.innerHTML = `<span class="dep-badge-icon">⚠</span>Dependency Missing: ${missing.join(', ')}`;
+    } else if (badge) {
+      badge.remove();
+    }
+    // Also update all blocks whose deps include this block — they may now be satisfied
+    CATEGORIES.forEach(cat2 => cat2.blocks.forEach(b2 => {
+      if (b2.id === b.id) return;
+      if (!S.selected.has(b2.id)) return;
+      if (!(b2.deps||[]).some(d => NAME_TO_ID[d.toLowerCase()] === b.id)) return;
+      const el2 = document.getElementById('bs-' + b2.id);
+      if (!el2) return;
+      const missing2 = getMissingDeps(b2);
+      const warn2 = missing2.length > 0;
+      el2.classList.toggle('dep-warn', warn2);
+      const right2 = el2.querySelector('.bh-right');
+      if (!right2) return;
+      let badge2 = right2.querySelector('.dep-badge');
+      if (warn2) {
+        if (!badge2) { badge2 = document.createElement('span'); badge2.className='dep-badge'; right2.insertBefore(badge2, right2.firstChild); }
+        badge2.innerHTML = `<span class="dep-badge-icon">⚠</span>Dependency Missing: ${missing2.join(', ')}`;
+      } else if (badge2) badge2.remove();
+    }));
+  }));
+}
+
+
+/* ════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+const S = {
+  selected: new Set(),
+  open:     new Set(),
+  ratings:  {},
+  deliverables: {},
+  completionDates: {},
+  filter:   'all',
+};
+
+/* ════════════════════════════════════════════════
+   PERSISTENCE — JSON export/import only
+════════════════════════════════════════════════ */
+let currentSessionName = null;
+
+/* Serialize current state to a plain object */
+function stateToObj() {
+  return {
+    selected:         [...S.selected],
+    ratings:          S.ratings,
+    deliverables:     S.deliverables,
+    completionDates:  S.completionDates,
+    project: {
+      opp:     document.getElementById('oppNum').value,
+      cust:    document.getElementById('custName').value,
+      partner: document.getElementById('partnerName').value,
+      engStart:document.getElementById('engStart').value,
+    },
+  };
+}
+
+/* Load a plain object back into state and re-render */
+function objToState(obj) {
+  S.selected        = new Set(obj.selected || []);
+  S.ratings         = obj.ratings         || {};
+  S.deliverables    = obj.deliverables    || {};
+  S.completionDates = obj.completionDates || {};
+  const p = obj.project || {};
+  document.getElementById('oppNum').value      = p.opp      || '';
+  document.getElementById('custName').value    = p.cust     || '';
+  document.getElementById('partnerName').value = p.partner  || '';
+  document.getElementById('engStart').value    = p.engStart || '';
+  onEngStartChange(p.engStart || '');
+  S.open = new Set([...S.selected]);
+  render();
+}
+
+function setSessionLabel(name) {
+  const el = document.getElementById('sbSessionName');
+  if (name) {
+    el.textContent = name;
+    el.classList.add('loaded');
+  } else {
+    el.textContent = 'No session loaded';
+    el.classList.remove('loaded');
+  }
+  currentSessionName = name || null;
+}
+
+/* Build export filename: oppnum-customer-yyyy-mm-dd.json */
+function buildFilename() {
+  const opp  = document.getElementById('oppNum').value.trim();
+  const cust = document.getElementById('custName').value.trim();
+  const date = new Date().toISOString().slice(0,10); // yyyy-mm-dd
+  // Sanitize opp and cust (replace unsafe chars with hyphen) but preserve original case for cust
+  const oppSlug  = opp.replace(/[^a-z0-9]/gi, '-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  const custSlug = cust.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  const parts = [oppSlug, custSlug, date].filter(Boolean);
+  return (parts.join('-') || 'vcf-session-' + date) + '.json';
+}
+
+/* Export current state as a named .json file */
+function cmdExportJSON() {
+  const data = stateToObj();
+  data._meta = { exported: new Date().toISOString(), version: '0.4.1' };
+  const filename = buildFilename();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* Import a .json file — session name from filename, preserving date hyphens */
+function cmdImportJSON(input) {
+  const file = input.files[0];
+  if (!file) return;
+  // Strip .json, then replace hyphens only between word segments (not in date yyyy-mm-dd)
+  // Strategy: replace hyphens NOT followed by 2 digits then end-of-segment with space
+  const base = file.name.replace(/\.json$/i, '');
+  // Preserve date pattern (4digit-2digit-2digit) — replace other hyphens/underscores with spaces
+  const displayName = base
+    .replace(/(\d{4}-\d{2}-\d{2})/g, '\x00$1\x00')  // protect date
+    .replace(/[-_]+/g, ' ')                            // replace other separators with space
+    .replace(/\x00/g, '')                              // remove protection markers
+    .trim();
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const obj = JSON.parse(e.target.result);
+      objToState(obj);
+      setSessionLabel(displayName);
+    } catch { alert('Could not read file — make sure it is a valid VCF session .json export.'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+/* Clear modal */
+function modalClear() { openModal('modalClearEl'); }
+function confirmClear() {
+  S.selected        = new Set();
+  S.open            = new Set();
+  S.ratings         = {};
+  S.deliverables    = {};
+  S.completionDates = {};
+  document.getElementById('oppNum').value      = '';
+  document.getElementById('custName').value    = '';
+  document.getElementById('partnerName').value = '';
+  document.getElementById('engStart').value    = '';
+  onEngStartChange('');
+  setSessionLabel(null);
+  closeModal('modalClearEl');
+  render();
+}
+
+/* Modal helpers */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+/* Update Contract Start display label */
+function onEngStartChange(val) {
+  const disp = document.getElementById('engStartDisplay');
+  if (!disp) return;
+  if (val) {
+    const [y,m,d] = val.split('-');
+    disp.textContent = `${m}/${d}/${y}`;
+    disp.style.display = 'inline';
+  } else {
+    disp.textContent = '';
+    disp.style.display = 'none';
+  }
+}
+
+/* setSt — no auto-save needed without localStorage */
+function setSt(field, id, val) { S[field][id] = val; }
+
+/* ════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════ */
+// Renders an array of strings as a bullet list; falls back gracefully for legacy strings
+function bullets(val) {
+  if (!val) return '<span class="bi-empty">—</span>';
+  const items = Array.isArray(val) ? val : [val];
+  return items.map(s => `<div class="bi-bullet"><span class="bi-bul">•</span><span>${s}</span></div>`).join('');
+}
+function render() {
+  const app = document.getElementById('app');
+  let html = '';
+
+  CATEGORIES.forEach(cat => {
+    // filter blocks
+    let blocks = cat.blocks;
+    if (S.filter === 'selected')   blocks = blocks.filter(b => S.selected.has(b.id));
+    if (S.filter === 'unselected') blocks = blocks.filter(b => !S.selected.has(b.id));
+    if (S.filter.startsWith('cat-')) blocks = S.filter === 'cat-'+cat.id ? blocks : [];
+    if (!blocks.length) return;
+
+    const selInCat = cat.blocks.filter(b => S.selected.has(b.id)).length;
+
+    // group-head (identical markup to field guide)
+    html += `<div class="group-head" data-cat="${cat.id}">
+      <span class="gh-num">${cat.num}</span>
+      <span class="gh-name">${cat.label}</span>
+      <span class="gh-meta">
+        ${selInCat ? `<span class="gh-sel">${selInCat} selected</span>` : ''}
+        <span>${blocks.length} block${blocks.length!==1?'s':''}</span>
+      </span>
+    </div>`;
+
+    // blocks
+    blocks.forEach(b => {
+      const sel = S.selected.has(b.id);
+      const open = S.open.has(b.id);
+      const rv = S.ratings[b.id] || '';
+      // Dep warning: selected block has unselected dependencies
+      const missingDeps = sel ? getMissingDeps(b) : [];
+      const depWarn = missingDeps.length > 0;
+
+      html += `
+<div class="block-section${sel?' selected':''}${open?' open':''}${depWarn?' dep-warn':''}" id="bs-${b.id}">
+  <div class="block-hd" onclick="toggleOpen('${b.id}')">
+    <div class="bh-left">
+      <div class="bh-check" onclick="event.stopPropagation();toggleSel('${b.id}')">${sel?'✓':''}</div>
+      <div class="bh-text">
+        <div class="bh-cat">${cat.label}</div>
+        <div class="bh-name">${b.name}</div>
+      </div>
+    </div>
+    <div class="bh-right">
+      ${depWarn ? `<span class="dep-badge"><span class="dep-badge-icon">⚠</span>Dependency Missing: ${missingDeps.join(', ')}</span>` : ''}
+      <select class="bh-rating-select ${rcls(rv)}" id="sel-${b.id}"
+        onclick="event.stopPropagation()"
+        onchange="setRating('${b.id}',this)">
+        ${rOpts(rv)}
+      </select>
+      <span class="toggle-chev">▼</span>
+    </div>
+  </div>
+  <div class="block-body">
+    <div class="block-body-inner">
+      <div class="block-grid-fixed">
+        <div class="block-info">
+          <div class="bi"><div class="bi-lbl">Evaluation Criteria</div><div class="bi-val">${bullets(b.eval)}</div></div>
+          <div class="bi"><div class="bi-lbl">Key Steps</div><div class="bi-val">${bullets(b.steps)}</div></div>
+          <div class="bi"><div class="bi-lbl">Dependencies</div><div class="bi-val">${bullets(b.deps)}</div></div>
+          <div class="bi"><div class="bi-lbl">SOW Deliverables</div><div class="bi-val">${bullets(b.sow)}</div></div>
+          <div class="bi"><div class="bi-lbl">Variations</div><div class="bi-val">${bullets(b.vars)}</div></div>
+        </div>
+        <div class="block-fields">
+          <div class="bf">
+            <div class="bf-lbl"><span class="dot"></span>Completion Date</div>
+            <input class="bf-date-inp" type="date"
+              onclick="event.stopPropagation()"
+              onchange="setSt('completionDates','${b.id}',this.value)"
+              value="${S.completionDates[b.id]||''}">
+          </div>
+          <div class="bf">
+            <div class="bf-lbl"><span class="dot"></span>Days Weight</div>
+            <div class="bf-days-badge">
+              <span class="bf-days-num">${b.days}</span>
+              <span class="bf-days-unit">days</span>
+            </div>
+            <div class="bf-readonly-note">Broadcom pre-defined · read-only</div>
+          </div>
+          <div class="bf bf-span2">
+            <div class="bf-lbl"><span class="dot"></span>Deliverables</div>
+            <textarea class="field-textarea" rows="4"
+              placeholder="List key deliverables for this block…"
+              onclick="event.stopPropagation()"
+              oninput="setSt('deliverables','${b.id}',this.value)">${S.deliverables[b.id]||''}</textarea>
+          </div>
+          <div class="bf">
+            <div class="bf-lbl"><span class="dot"></span>Reference Tech Docs</div>
+            ${(b.docs||[]).map(d=>`<a class="ref-link" href="${d.url}" target="_blank" rel="noopener">${d.label}</a>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+    });
+  });
+
+  app.innerHTML = html;
+  updateCounts();
+}
+
+/* ════════════════════════════════════════════════
+   ACTIONS
+════════════════════════════════════════════════ */
+function toggleSel(id) {
+  if (S.selected.has(id)) S.selected.delete(id);
+  else S.selected.add(id);
+  // patch DOM without full re-render
+  const bs = document.getElementById('bs-'+id);
+  if (!bs) { render(); return; }
+  const chk = bs.querySelector('.bh-check');
+  const sel = S.selected.has(id);
+  bs.classList.toggle('selected', sel);
+  bs.classList.toggle('open', S.open.has(id));
+  if (chk) chk.textContent = sel ? '✓' : '';
+  updateCounts();
+  updateSelCounts();
+  updateDepWarnings();
+}
+
+function toggleOpen(id) {
+  if (S.open.has(id)) S.open.delete(id);
+  else S.open.add(id);
+  const bs = document.getElementById('bs-'+id);
+  if (bs) bs.classList.toggle('open', S.open.has(id));
+}
+
+function setRating(id, sel) {
+  S.ratings[id] = sel.value;
+  sel.className = 'bh-rating-select ' + rcls(sel.value);
+}
+
+function setFilter(f, btn) {
+  /* Close scorecard if open */
+  if (scorecardOpen) {
+    scorecardOpen = false;
+    document.getElementById('btnScorecard').classList.remove('active');
+    document.getElementById('scorecardView').style.display = 'none';
+    document.getElementById('app').style.display = '';
+  }
+  S.filter = f;
+  document.querySelectorAll('.fbtn[data-filter]').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === f);
+  });
+  const dd = document.getElementById('viewDropdown');
+  if (dd) dd.value = 'all';
+  const srch = document.getElementById('srch');
+  if (srch) srch.value = '';
+  render();
+}
+
+function setFilterFromDropdown(sel) {
+  if (scorecardOpen) {
+    scorecardOpen = false;
+    document.getElementById('btnScorecard').classList.remove('active');
+    document.getElementById('scorecardView').style.display = 'none';
+    document.getElementById('app').style.display = '';
+  }
+  S.filter = sel.value;
+  document.querySelectorAll('.fbtn[data-filter]').forEach(b => b.classList.remove('active'));
+  document.getElementById('srch').value = '';
+  render();
+}
+
+function doSearch(query) {
+  if (scorecardOpen) {
+    scorecardOpen = false;
+    document.getElementById('btnScorecard').classList.remove('active');
+    document.getElementById('scorecardView').style.display = 'none';
+    document.getElementById('app').style.display = '';
+  }
+  const q = query.trim().toLowerCase();
+  document.querySelectorAll('.fbtn[data-filter]').forEach(b => b.classList.remove('active'));
+  if (!q) {
+    document.querySelector('.fbtn[data-filter="all"]').classList.add('active');
+    S.filter = 'all';
+    render();
+    return;
+  }
+  const app = document.getElementById('app');
+  let html = '';
+  CATEGORIES.forEach(cat => {
+    const matched = cat.blocks.filter(b => {
+      const haystack = [b.name, ...(b.eval||[]), ...(b.steps||[]), ...(b.deps||[]),
+                        ...(b.vars||[]), ...(b.sow||[])].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+    if (!matched.length) return;
+    const selInCat = matched.filter(b => S.selected.has(b.id)).length;
+    html += `<div class="group-head" data-cat="${cat.id}">
+      <span class="gh-num">${cat.num}</span>
+      <span class="gh-name">${cat.label}</span>
+      <span class="gh-meta">${selInCat?`<span class="gh-sel">${selInCat} selected</span>`:''}<span>${matched.length} result${matched.length!==1?'s':''}</span></span>
+    </div>`;
+    matched.forEach(b => {
+      const sel = S.selected.has(b.id);
+      const open = S.open.has(b.id);
+      const rv = S.ratings[b.id] || '';
+      html += `
+<div class="block-section${sel?' selected':''}${open?' open':''}" id="bs-${b.id}">
+  <div class="block-hd" onclick="toggleOpen('${b.id}')">
+    <div class="bh-left">
+      <div class="bh-check" onclick="event.stopPropagation();toggleSel('${b.id}')">${sel?'✓':''}</div>
+      <div class="bh-text"><div class="bh-cat">${cat.label}</div><div class="bh-name">${b.name}</div></div>
+    </div>
+    <div class="bh-right">
+      <select class="bh-rating-select ${rcls(rv)}" id="sel-${b.id}" onclick="event.stopPropagation()" onchange="setRating('${b.id}',this)">${rOpts(rv)}</select>
+      <span class="toggle-chev">▼</span>
+    </div>
+  </div>
+  <div class="block-body">
+    <div class="block-body-inner"><div class="block-grid-fixed">
+      <div class="block-info">
+        <div class="bi"><div class="bi-lbl">Evaluation Criteria</div><div class="bi-val">${bullets(b.eval)}</div></div>
+        <div class="bi"><div class="bi-lbl">Key Steps</div><div class="bi-val">${bullets(b.steps)}</div></div>
+        <div class="bi"><div class="bi-lbl">Dependencies</div><div class="bi-val">${bullets(b.deps)}</div></div>
+        <div class="bi"><div class="bi-lbl">SOW Deliverables</div><div class="bi-val">${bullets(b.sow)}</div></div>
+        <div class="bi"><div class="bi-lbl">Variations</div><div class="bi-val">${bullets(b.vars)}</div></div>
+      </div>
+      <div class="block-fields">
+        <div class="bf"><div class="bf-lbl"><span class="dot"></span>Completion Date</div>
+          <input class="bf-date-inp" type="date" onclick="event.stopPropagation()" onchange="setSt('completionDates','${b.id}',this.value)" value="${S.completionDates[b.id]||''}">
+        </div>
+        <div class="bf"><div class="bf-lbl"><span class="dot"></span>Days Weight</div>
+          <div class="bf-days-badge"><span class="bf-days-num">${b.days}</span><span class="bf-days-unit">days</span></div>
+          <div class="bf-readonly-note">Broadcom pre-defined · read-only</div>
+        </div>
+        <div class="bf bf-span2"><div class="bf-lbl"><span class="dot"></span>Deliverables</div>
+          <textarea class="field-textarea" rows="4" placeholder="List key deliverables…" onclick="event.stopPropagation()" oninput="setSt('deliverables','${b.id}',this.value)">${S.deliverables[b.id]||''}</textarea>
+        </div>
+        <div class="bf"><div class="bf-lbl"><span class="dot"></span>Reference Tech Docs</div>
+          ${(b.docs||[]).map(d=>`<a class="ref-link" href="${d.url}" target="_blank" rel="noopener">${d.label}</a>`).join('')}
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>`;
+    });
+  });
+  if (!html) html = `<div style="padding:40px var(--px);font-size:14px;color:var(--faint);font-weight:300;">No blocks match "<strong style="color:var(--body)">${q}</strong>"</div>`;
+  app.innerHTML = html;
+  updateCounts();
+}
+
+function updateCounts() {
+  const n = S.selected.size;
+  document.getElementById('statSel').textContent = n;
+}
+
+function updateSelCounts() {
+  // update gh-meta without full re-render
+  CATEGORIES.forEach(cat => {
+    const sel = cat.blocks.filter(b => S.selected.has(b.id)).length;
+    const ghEl = document.querySelector(`.group-head[data-cat="${cat.id}"] .gh-meta`);
+    if (ghEl) {
+      const total = ghEl.querySelector('span:last-child');
+      let selSpan = ghEl.querySelector('.gh-sel');
+      if (sel > 0) {
+        if (!selSpan) { selSpan = document.createElement('span'); selSpan.className='gh-sel'; ghEl.insertBefore(selSpan, total); }
+        selSpan.textContent = sel + ' selected';
+      } else if (selSpan) selSpan.remove();
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════
+   EXPORT REPORT
+════════════════════════════════════════════════ */
+function exportReport() {
+  const selected = CATEGORIES.flatMap(cat =>
+    cat.blocks.filter(b => S.selected.has(b.id)).map(b => ({...b, catLabel:cat.label, catNum:cat.num}))
+  );
+  if (!selected.length) { alert('Select at least one block before exporting.'); return; }
+
+  const now  = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const opp  = document.getElementById('oppNum').value.trim();
+  const cust = document.getElementById('custName').value.trim();
+  const part = document.getElementById('partnerName').value.trim();
+
+  let metaRows = '';
+  if (opp)  metaRows += `<div class="r-meta-row"><span class="r-meta-lbl">Opportunity #</span><span class="r-meta-val">${opp}</span></div>`;
+  if (cust) metaRows += `<div class="r-meta-row"><span class="r-meta-lbl">Customer</span><span class="r-meta-val">${cust}</span></div>`;
+  if (part) metaRows += `<div class="r-meta-row"><span class="r-meta-lbl">Partner</span><span class="r-meta-val">${part}</span></div>`;
+
+  let body = '';
+  let lastCat = '';
+
+  selected.forEach(b => {
+    if (b.catLabel !== lastCat) {
+      body += `<div class="r-cat-head"><span class="r-cat-num">${b.catNum}</span><span class="r-cat-name">${b.catLabel}</span></div>`;
+      lastCat = b.catLabel;
+    }
+    const rv  = S.ratings[b.id]||'';
+    const del = S.deliverables[b.id]||'';
+    const cd  = S.completionDates[b.id]||'';
+    let cdFmt = '';
+    if (cd) { const [y,m,d] = cd.split('-'); cdFmt = `${m}/${d}/${y}`; }
+    body += `
+      <div class="r-block">
+        <div class="r-block-hd">
+          <div class="r-block-name">${b.name}</div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+            ${cdFmt ? `<span class="r-date">Completed: ${cdFmt}</span>` : ''}
+            ${rv    ? `<span class="r-pill ${rcls(rv)}">${rlbl(rv)}</span>` : ''}
+          </div>
+        </div>
+        <div class="r-body">
+          <div class="r-cell r-cell-full">
+            <div class="r-lbl">Deliverables</div>
+            <div class="r-val">${del || '<span class="r-empty">—</span>'}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>VCF Building Blocks Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,600;6..12,700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#115A8C;--rule:#D0DDE8;--text:#1A2733;--body:#2F4050;--muted:#4A6070;
+  --sa-bg:#E8F4EC;--sa-bd:#2E7D50;--sa-tx:#1B5E38;
+  --ma-bg:#EAF2FB;--ma-bd:#1E6FAB;--ma-tx:#1A4E7A;
+  --md-bg:#FEF3E2;--md-bd:#C17F00;--md-tx:#7A4500;
+  --sd-bg:#FDECEA;--sd-bd:#C0392B;--sd-tx:#7A1A1A;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',sans-serif;font-size:12px;color:var(--text);background:#fff;padding:28px 36px;}
+.r-header{margin-bottom:16px;padding-bottom:12px;border-bottom:3px solid var(--blue);}
+.r-header h1{font-size:17px;font-weight:700;color:#21343D;}
+.r-header .sub{font-size:12px;color:var(--muted);margin-top:3px;}
+.r-meta{display:flex;gap:24px;margin-top:10px;padding-top:10px;border-top:1px solid var(--rule);}
+.r-meta-row{display:flex;align-items:baseline;gap:6px;}
+.r-meta-lbl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);}
+.r-meta-val{font-size:12px;font-weight:700;color:var(--text);}
+.r-cat-head{background:var(--blue);padding:7px 12px;display:flex;align-items:center;gap:8px;margin-top:20px;border-left:4px solid rgba(255,255,255,.3);}
+.r-cat-num{font-size:10px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.7);background:rgba(255,255,255,.14);padding:2px 7px;border-radius:1px;}
+.r-cat-name{font-size:12px;font-weight:700;color:#fff;}
+.r-block{border:1px solid var(--rule);border-top:none;page-break-inside:avoid;}
+.r-block-hd{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#f7fafc;border-bottom:1px solid var(--rule);border-left:4px solid var(--blue);}
+.r-block-name{font-size:12px;font-weight:700;color:#1B1D36;flex:1;}
+.r-date{font-size:11px;font-weight:600;color:var(--muted);}
+.r-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:2px;border:1px solid;white-space:nowrap;}
+.rp-sa{background:var(--sa-bg);border-color:var(--sa-bd);color:var(--sa-tx);}
+.rp-ma{background:var(--ma-bg);border-color:var(--ma-bd);color:var(--ma-tx);}
+.rp-md{background:var(--md-bg);border-color:var(--md-bd);color:var(--md-tx);}
+.rp-sd{background:var(--sd-bg);border-color:var(--sd-bd);color:var(--sd-tx);}
+.r-body{padding:8px 12px 10px;}
+.r-lbl{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.r-val{font-size:12px;color:var(--body);line-height:1.55;font-weight:400;white-space:pre-wrap;}
+.r-empty{color:#aab;font-style:italic;}
+@media print{body{padding:14px 20px;}@page{margin:1cm;}}
+</style>
+<script>window.onload=function(){window.print();}<\/script>
+</head><body>
+<div class="r-header">
+  <h1>VCF Adoption - Building Blocks Report</h1>
+  <div class="sub">Generated ${now} &nbsp;&middot;&nbsp; ${selected.length} block${selected.length!==1?'s':''} selected</div>
+  ${metaRows ? `<div class="r-meta">${metaRows}</div>` : ''}
+</div>
+${body}
+</body></html>`;
+
+  const blob2 = new Blob([html], { type: 'text/html' });
+  const a2 = document.createElement('a');
+  a2.href = URL.createObjectURL(blob2);
+  a2.target = '_blank';
+  document.body.appendChild(a2);
+  a2.click();
+  document.body.removeChild(a2);
+  setTimeout(() => URL.revokeObjectURL(a2.href), 10000);
+}
+
+/* ════════════════════════════════════════════════
+   SCORECARD
+════════════════════════════════════════════════ */
+
+/* Scorecard period definitions — four 6-month periods covering 24 months */
+const SC_PERIODS = [
+  {num:'S1', label:'Scorecard 1', months:[0,6],  req:4},
+  {num:'S2', label:'Scorecard 2', months:[6,12], req:5},
+  {num:'S3', label:'Scorecard 3', months:[12,18],req:5},
+  {num:'S4', label:'Scorecard 4', months:[18,24],req:5},
+];
+
+/* Build flat block lookup by id */
+const BLOCK_BY_ID = {};
+CATEGORIES.forEach(cat => cat.blocks.forEach(b => { BLOCK_BY_ID[b.id] = b; }));
+
+/* Add N months to a date, return new Date */
+function addMonths(d, n) {
+  const r = new Date(d);
+  r.setMonth(r.getMonth() + n);
+  return r;
+}
+
+/* Format date as "Mon D, YYYY" */
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+/* Format date as "Mon D" */
+function fmtDateShort(d) {
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+let scorecardOpen = false;
+
+function toggleScorecard() {
+  scorecardOpen = !scorecardOpen;
+  const btn  = document.getElementById('btnScorecard');
+  const appEl = document.getElementById('app');
+  const scEl  = document.getElementById('scorecardView');
+  if (scorecardOpen) {
+    btn.classList.add('active');
+    appEl.style.display = 'none';
+    scEl.style.display  = 'block';
+    // deactivate filter buttons
+    document.querySelectorAll('.fbtn[data-filter]').forEach(b => b.classList.remove('active'));
+    document.getElementById('viewDropdown').value = 'all';
+    document.getElementById('srch').value = '';
+    renderScorecard();
+  } else {
+    btn.classList.remove('active');
+    appEl.style.display = '';
+    scEl.style.display  = 'none';
+    // restore active filter button
+    document.querySelector('.fbtn[data-filter="all"]').classList.add('active');
+    S.filter = 'all';
+    render();
+  }
+}
+
+function renderScorecard() {
+  const scEl   = document.getElementById('scorecardView');
+  const startVal = document.getElementById('engStart').value;
+  const opp    = document.getElementById('oppNum').value.trim();
+  const cust   = document.getElementById('custName').value.trim();
+  const part   = document.getElementById('partnerName').value.trim();
+
+  /* Header meta line */
+  const metaParts = [opp, cust, part].filter(Boolean).join(' · ');
+
+  if (!startVal) {
+    scEl.innerHTML = `
+    <div class="sc-wrap">
+      <div class="sc-page-hd">
+        <div>
+          <div class="sc-page-title">VCF Adoption Scorecard</div>
+          <div class="sc-page-sub">Service Entitlement</div>
+          ${metaParts ? `<div class="sc-page-sub" style="margin-top:3px;">${metaParts}</div>` : ''}
+        </div>
+      </div>
+      <div class="sc-no-start">
+        <p>Enter a <strong>Contract Start Date</strong> in the project bar above to generate the scorecard periods.</p>
+      </div>
+    </div>`;
+    return;
+  }
+
+  const startDate = new Date(startVal + 'T00:00:00');
+
+  /* Compute period windows */
+  const periods = SC_PERIODS.map(p => {
+    const from = addMonths(startDate, p.months[0]);
+    const to   = addMonths(startDate, p.months[1]);
+    // to is exclusive end — display as day before
+    const toDisplay = new Date(to); toDisplay.setDate(toDisplay.getDate() - 1);
+    return { ...p, from, to, toDisplay };
+  });
+
+  /* Bucket completed+selected blocks into periods by completion date */
+  /* A block counts only if: selected, has a completion date, date falls within period window */
+  const buckets = periods.map(p => {
+    const blocks = [];
+    S.selected.forEach(id => {
+      const cd = S.completionDates[id];
+      if (!cd) return;
+      const d = new Date(cd + 'T00:00:00');
+      if (d >= p.from && d < p.to) {
+        blocks.push({ id, date: d });
+      }
+    });
+    // Sort by completion date ascending
+    blocks.sort((a,b) => a.date - b.date);
+    return blocks;
+  });
+
+  /* Summary totals */
+  const totalCompleted = buckets.reduce((s,b) => s + b.length, 0);
+  const totalDays      = buckets.reduce((s,b) =>
+    s + b.reduce((ss,row) => ss + (BLOCK_BY_ID[row.id]?.days||0), 0), 0);
+  const totalReq       = SC_PERIODS.reduce((s,p) => s + p.req, 0);
+
+  /* Build period columns */
+  let periodsHtml = '';
+  periods.forEach((p, i) => {
+    const bucket    = buckets[i];
+    const count     = bucket.length;
+    const daysTotal = bucket.reduce((s,row) => s + (BLOCK_BY_ID[row.id]?.days||0), 0);
+    const pct       = Math.min(100, Math.round((count / p.req) * 100));
+    const now       = new Date();
+    const isPast    = now >= p.to;
+    const isCurrent = now >= p.from && now < p.to;
+
+    let statusCls, statusLabel, gaugeCls;
+    if (count >= p.req) {
+      statusCls = 'pass'; statusLabel = '✓ Passing'; gaugeCls = 'pass';
+    } else if (isPast && count < p.req) {
+      statusCls = 'fail'; statusLabel = '✗ Not Met'; gaugeCls = 'fail';
+    } else if (isCurrent) {
+      statusCls = 'warn'; statusLabel = '⬤ In Progress'; gaugeCls = 'warn';
+    } else {
+      statusCls = 'pend'; statusLabel = '– Upcoming'; gaugeCls = '';
+    }
+
+    let rowsHtml = '';
+    if (bucket.length === 0) {
+      rowsHtml = `<div class="sc-empty-period">No completed blocks in this period</div>`;
+    } else {
+      bucket.forEach(row => {
+        const b = BLOCK_BY_ID[row.id];
+        rowsHtml += `
+        <div class="sc-block-row">
+          <div class="sc-dot done"></div>
+          <div class="sc-block-name">${b?.name||row.id}</div>
+          <div class="sc-block-days">${b?.days||'?'}d</div>
+          <div class="sc-block-date">${fmtDateShort(row.date)}</div>
+        </div>`;
+      });
+    }
+
+    periodsHtml += `
+    <div class="sc-period">
+      <div class="sc-period-hd">
+        <div class="sc-period-num">${p.label}</div>
+        <div class="sc-period-range">${fmtDateShort(p.from)} – ${fmtDateShort(p.toDisplay)}</div>
+        <div class="sc-period-req">Min. required: ${p.req} blocks</div>
+      </div>
+      <div class="sc-gauge">
+        <div class="sc-gauge-track">
+          <div class="sc-gauge-fill ${gaugeCls}" style="width:${pct}%"></div>
+        </div>
+        <div class="sc-gauge-nums">
+          <span class="sc-gauge-big">${count}</span>
+          <span class="sc-gauge-of">/ ${p.req} req.</span>
+          <span class="sc-gauge-days">${daysTotal}d</span>
+        </div>
+        <div class="sc-status ${statusCls}">${statusLabel}</div>
+      </div>
+      <div class="sc-blocks-list">${rowsHtml}</div>
+      <div class="sc-period-footer">
+        <span class="sc-footer-lbl">Period total</span>
+        <span class="sc-footer-val">${daysTotal} days</span>
+      </div>
+    </div>`;
+  });
+
+  /* Unassigned — selected with no date, or date outside all windows */
+  const allWindowedIds = new Set(buckets.flat().map(r => r.id));
+  const unassigned = [];
+  S.selected.forEach(id => {
+    const cd = S.completionDates[id];
+    if (!cd) unassigned.push({id, reason:'No date entered'});
+    else if (!allWindowedIds.has(id)) unassigned.push({id, reason:'Date outside all periods'});
+  });
+
+  let unassignedHtml = '';
+  if (unassigned.length) {
+    unassignedHtml = `
+    <div style="margin-top:12px;background:#fff;border:1px solid var(--rule);border-radius:3px;overflow:hidden;">
+      <div style="padding:8px 14px;background:#F7F9FA;border-bottom:1px solid var(--rule);font-size:11px;font-weight:700;color:var(--muted);">
+        Selected — not yet completed (${unassigned.length})
+      </div>
+      ${unassigned.map(u => {
+        const b = BLOCK_BY_ID[u.id];
+        return `<div style="display:flex;align-items:center;gap:10px;padding:6px 14px;border-bottom:1px solid #f0f4f7;">
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--rule);flex-shrink:0;"></div>
+          <div style="font-size:11px;color:var(--body);flex:1;">${b?.name||u.id}</div>
+          <div style="font-size:10px;color:var(--faint);">${u.reason}</div>
+          <div style="font-size:10px;font-weight:700;color:var(--blue);">${b?.days||'?'}d</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  const engEndDate = addMonths(startDate, 12);
+  engEndDate.setDate(engEndDate.getDate() - 1);
+
+  scEl.innerHTML = `
+  <div class="sc-wrap">
+    <div class="sc-page-hd">
+      <div>
+        <div class="sc-page-title">VCF Adoption Scorecard</div>
+        <div class="sc-page-sub">Service Entitlement</div>
+        ${cust ? `<div class="sc-page-sub" style="margin-top:3px;">Customer: <strong style="color:rgba(255,255,255,.9);">${cust}</strong></div>` : ''}
+        ${part ? `<div class="sc-page-sub" style="margin-top:1px;">Partner: <strong style="color:rgba(255,255,255,.9);">${part}</strong></div>` : ''}
+      </div>
+      <div class="sc-page-meta">
+        <div><strong>Contract Start:</strong> ${fmtDate(startDate)} &nbsp;·&nbsp; <strong>Contract End:</strong> ${fmtDate(engEndDate)}</div>
+        <button onclick="exportScorecardReport()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Nunito Sans',sans-serif;font-size:11px;font-weight:600;padding:5px 12px;border-radius:2px;cursor:pointer;letter-spacing:.04em;">&#8595; Export Scorecard Report</button>
+      </div>
+    </div>
+    <div class="sc-periods-grid">${periodsHtml}</div>
+    ${unassignedHtml}
+    <div class="sc-summary">
+      <div class="sc-sum-item"><div class="sc-sum-val">${totalCompleted}</div><div class="sc-sum-lbl">Blocks Completed</div></div>
+      <div class="sc-sum-sep"></div>
+      <div class="sc-sum-item"><div class="sc-sum-val">${totalReq}</div><div class="sc-sum-lbl">Total Required</div></div>
+      <div class="sc-sum-sep"></div>
+      <div class="sc-sum-item"><div class="sc-sum-val">${totalDays}</div><div class="sc-sum-lbl">Days Delivered</div></div>
+      <div class="sc-sum-sep"></div>
+      <div class="sc-sum-item"><div class="sc-sum-val">${S.selected.size}</div><div class="sc-sum-lbl">Blocks Selected</div></div>
+    </div>
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════
+   SCORECARD REPORT EXPORT
+════════════════════════════════════════════════ */
+function exportScorecardReport() {
+  const startVal = document.getElementById('engStart').value;
+  if (!startVal) { alert('Enter a Contract Start Date before exporting the scorecard.'); return; }
+
+  const startDate  = new Date(startVal + 'T00:00:00');
+  const opp  = document.getElementById('oppNum').value.trim();
+  const cust = document.getElementById('custName').value.trim();
+  const part = document.getElementById('partnerName').value.trim();
+  const now  = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  const periods = SC_PERIODS.map(p => {
+    const from = addMonths(startDate, p.months[0]);
+    const to   = addMonths(startDate, p.months[1]);
+    const toDisplay = new Date(to); toDisplay.setDate(toDisplay.getDate()-1);
+    return {...p, from, to, toDisplay};
+  });
+
+  const buckets = periods.map(p => {
+    const blocks = [];
+    S.selected.forEach(id => {
+      const cd = S.completionDates[id];
+      if (!cd) return;
+      const d = new Date(cd + 'T00:00:00');
+      if (d >= p.from && d < p.to) blocks.push({id, date:d});
+    });
+    blocks.sort((a,b) => a.date - b.date);
+    return blocks;
+  });
+
+  let metaRows = '';
+  if (opp)  metaRows += `<tr><td class="ml">Opportunity #</td><td class="mv">${opp}</td></tr>`;
+  if (cust) metaRows += `<tr><td class="ml">Customer</td><td class="mv">${cust}</td></tr>`;
+  if (part) metaRows += `<tr><td class="ml">Partner</td><td class="mv">${part}</td></tr>`;
+  metaRows += `<tr><td class="ml">Contract Start</td><td class="mv">${fmtDate(startDate)}</td></tr>`;
+
+  const totalCompleted = buckets.reduce((s,b) => s+b.length, 0);
+  const totalDays      = buckets.reduce((s,b) => s+b.reduce((ss,r) => ss+(BLOCK_BY_ID[r.id]?.days||0),0), 0);
+  const totalReqAll    = SC_PERIODS.reduce((s,p) => s+p.req, 0);
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>VCF Adoption Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito Sans',sans-serif;font-size:12px;color:#1A2733;background:#fff;padding:20px 28px;}
+/* Header */
+.r-header{margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid #115A8C;display:flex;align-items:flex-start;justify-content:space-between;}
+.r-header h1{font-size:17px;font-weight:700;color:#1B1D36;}
+.r-sub{font-size:12px;color:#4A6070;margin-top:3px;}
+.meta-table{margin-top:8px;}
+.meta-table td{padding:1px 0;font-size:11px;}
+.ml{color:#4A6070;font-weight:700;width:110px;padding-right:10px;}
+.mv{font-weight:700;color:#1A2733;}
+/* 4-column period grid */
+.periods-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #D0DDE8;border-radius:2px;overflow:hidden;margin-bottom:12px;}
+.period-card{border-right:1px solid #D0DDE8;display:flex;flex-direction:column;}
+.period-card:last-child{border-right:none;}
+.period-hd{padding:9px 10px;background:#1B1D36;border-left:3px solid rgba(255,255,255,.25);display:flex;align-items:flex-start;justify-content:space-between;}
+.period-label{font-size:12px;font-weight:700;color:#fff;}
+.period-range{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px;}
+.period-count{font-size:18px;font-weight:800;color:#fff;line-height:1;text-align:right;}
+.period-count span{font-size:10px;font-weight:400;color:rgba(255,255,255,.6);}
+/* Gauge */
+.gauge-wrap{padding:8px 10px 6px;border-bottom:1px solid #D0DDE8;}
+.gauge-track{height:4px;background:#D0DDE8;border-radius:2px;margin-bottom:5px;overflow:hidden;}
+.gauge-fill{height:100%;border-radius:2px;}
+.gauge-fill.pass{background:#2E7D50;}
+.gauge-fill.warn{background:#C17F00;}
+.gauge-fill.fail{background:#C0392B;}
+.gauge-row{display:flex;align-items:center;justify-content:space-between;}
+.gauge-status{font-size:11px;font-weight:700;}
+.gauge-status.pass{color:#1B5E38;}
+.gauge-status.warn{color:#7A4500;}
+.gauge-status.fail{color:#7A1A1A;}
+.gauge-status.pend{color:#8DA0AE;}
+.gauge-days{font-size:11px;font-weight:700;color:#115A8C;}
+/* Block rows */
+.block-rows{flex:1;padding:4px 0;}
+.block-row{display:flex;align-items:flex-start;gap:6px;padding:4px 10px;border-bottom:1px solid #f0f4f7;}
+.block-row:last-child{border-bottom:none;}
+.bdot{width:6px;height:6px;border-radius:50%;background:#2E7D50;flex-shrink:0;margin-top:3px;}
+.bname{font-size:11px;color:#2F4050;flex:1;line-height:1.3;}
+.bdays{font-size:11px;font-weight:700;color:#115A8C;white-space:nowrap;}
+.bdate{font-size:10px;color:#8DA0AE;white-space:nowrap;}
+.empty-row{padding:10px;font-size:11px;color:#8DA0AE;font-style:italic;}
+/* Footer row */
+.period-foot{padding:5px 10px;border-top:1px solid #D0DDE8;background:#F7F9FA;display:flex;justify-content:space-between;}
+.pf-lbl{font-size:11px;color:#4A6070;}
+.pf-val{font-size:11px;font-weight:700;color:#115A8C;}
+/* Summary bar */
+.summary{border:1px solid #D0DDE8;border-radius:2px;padding:10px 14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;}
+.sum-item{display:flex;flex-direction:column;gap:1px;}
+.sum-val{font-size:16px;font-weight:800;color:#1A2733;line-height:1;}
+.sum-lbl{font-size:11px;color:#4A6070;}
+.sum-sep{width:1px;height:28px;background:#D0DDE8;}
+@media print{body{padding:10px 14px;}@page{size:landscape;margin:.8cm;}}
+</style>
+<script>window.onload=function(){window.print();}<\/script>
+</head><body>
+<div class="r-header">
+  <div>
+    <h1>VCF Adoption Scorecard</h1>
+    <div class="r-sub">Service Entitlement${[cust,part].some(Boolean) ? ' &nbsp;·&nbsp; ' + [cust,part].filter(Boolean).join(' · ') : ''}</div>
+    <table class="meta-table"><tbody>${metaRows}</tbody></table>
+  </div>
+  <div style="text-align:right;font-size:11px;color:#4A6070;">Generated ${now}</div>
+</div>
+<div class="periods-grid">
+${periods.map((p,i) => {
+  const bucket    = buckets[i];
+  const count     = bucket.length;
+  const daysTotal = bucket.reduce((s,r) => s + (BLOCK_BY_ID[r.id]?.days||0), 0);
+  const pct       = Math.min(100, Math.round((count/p.req)*100));
+  const nowD      = new Date();
+  const isPast    = nowD >= p.to;
+  const isCurr    = nowD >= p.from && nowD < p.to;
+  let gCls, sTx, sCls;
+  if (count >= p.req)       { gCls='pass'; sTx='✓ Passing';     sCls='pass'; }
+  else if (isPast)           { gCls='fail'; sTx='✗ Not Met';     sCls='fail'; }
+  else if (isCurr)           { gCls='warn'; sTx='⬤ In Progress'; sCls='warn'; }
+  else                       { gCls='';     sTx='— Upcoming';    sCls='pend'; }
+  const rows = bucket.length === 0
+    ? `<div class="empty-row">No completed blocks</div>`
+    : bucket.map(row => {
+        const b = BLOCK_BY_ID[row.id];
+        return `<div class="block-row">
+          <div class="bdot"></div>
+          <div class="bname">${b?.name||row.id}</div>
+          <div class="bdays">${b?.days||'?'}d</div>
+          <div class="bdate">${row.date.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+        </div>`;
+      }).join('');
+  return `<div class="period-card">
+    <div class="period-hd">
+      <div>
+        <div class="period-label">${p.label}</div>
+        <div class="period-range">${p.from.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} – ${p.toDisplay.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+      </div>
+      <div class="period-count">${count}<br><span>/ ${p.req} req.</span></div>
+    </div>
+    <div class="gauge-wrap">
+      <div class="gauge-track"><div class="gauge-fill ${gCls}" style="width:${pct}%"></div></div>
+      <div class="gauge-row">
+        <span class="gauge-status ${sCls}">${sTx}</span>
+        <span class="gauge-days">${daysTotal}d</span>
+      </div>
+    </div>
+    <div class="block-rows">${rows}</div>
+    <div class="period-foot"><span class="pf-lbl">Period total</span><span class="pf-val">${daysTotal} days</span></div>
+  </div>`;
+}).join('')}
+</div>
+<div class="summary">
+  <div class="sum-item"><div class="sum-val">${totalCompleted}</div><div class="sum-lbl">Blocks Completed</div></div>
+  <div class="sum-sep"></div>
+  <div class="sum-item"><div class="sum-val">${totalReqAll}</div><div class="sum-lbl">Total Required</div></div>
+  <div class="sum-sep"></div>
+  <div class="sum-item"><div class="sum-val">${totalDays}</div><div class="sum-lbl">Days Delivered</div></div>
+  <div class="sum-sep"></div>
+  <div class="sum-item"><div class="sum-val">${S.selected.size}</div><div class="sum-lbl">Blocks Selected</div></div>
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.target = '_blank';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+}
+
+/* ════════ INIT ════════ */
+render();
+</script>
+</body>
+</html>
